@@ -4,40 +4,40 @@ import { Button } from "@/components/ui/button"
 
 const projects = [
   {
-    title: "Умный помощник по выборам",
-    category: "AI/ML и веб-разработка",
-    image: "/omgekeerdestemwijzer-banner.png",
+    title: "Рост продаж интернет-магазина",
+    category: "Таргетированная реклама",
+    image: "/modern-ecommerce-website.png",
     description:
-      "AI-приложение для выборов. Пользователи задают вопросы о позициях партий и получают 100% фактические ответы из официальных программ с использованием RAG-технологии.",
-    url: "https://de-omgekeerde-stemwijzer.onrender.com/",
-    tags: ["Next.js", "AI/ML", "RAG", "TypeScript"],
+      "Выстроили систему таргетированной рекламы ВКонтакте для fashion-ритейлера. За 3 месяца увеличили выручку с рекламных каналов в 2.8 раза при снижении стоимости привлечения на 34%.",
+    url: "#portfolio",
+    tags: ["ВКонтакте Ads", "Таргетинг", "e-commerce", "ROAS ×2.8"],
   },
   {
-    title: "Автомойка Tahsin",
-    category: "Веб-дизайн и разработка",
-    image: "/autopoetsbedrijf-tahsin-project.png",
+    title: "SMM для ресторанной сети",
+    category: "Контент и SMM",
+    image: "/restaurant-website-design.png",
     description:
-      "Профессиональный сайт для автомойки с 20-летним опытом. Полная презентация услуг, автомойки и гаража с современным адаптивным дизайном.",
-    url: "https://www.autopoetsbedrijftahsin.nl/",
-    tags: ["React", "Next.js", "Tailwind CSS"],
+      "Разработали контент-стратегию и запустили SMM для сети из 5 ресторанов. За полгода подписчики выросли с 2 000 до 28 000, посещаемость заведений увеличилась на 41%.",
+    url: "#portfolio",
+    tags: ["Instagram", "ВКонтакте", "Контент", "+1300% подписчиков"],
   },
   {
-    title: "Кадровое агентство CAN",
-    category: "Веб-разработка",
-    image: "/can-uitzendbureau-project.png",
+    title: "SEO для B2B-компании",
+    category: "SEO и контент-маркетинг",
+    image: "/professional-corporate-website.png",
     description:
-      "Кадровое агентство с 30-летним опытом в садоводческом секторе. Сайт с обзором услуг и прямыми контактами для работодателей и соискателей.",
-    url: "https://canbv.nl/",
-    tags: ["Next.js", "React", "Tailwind CSS"],
+      "Вывели промышленную компанию в топ-3 по 120+ целевым запросам. Органический трафик вырос с 800 до 9 400 визитов в месяц, количество заявок из поиска — в 6 раз.",
+    url: "#portfolio",
+    tags: ["SEO", "Контент", "B2B", "+1075% трафика"],
   },
   {
-    title: "Портфолио Murat Sahin",
-    category: "Портфолио-сайт",
-    image: "/murat-sahin-portfolio.png",
+    title: "Комплексный маркетинг стартапа",
+    category: "Полный цикл",
+    image: "/creative-portfolio-website.png",
     description:
-      "Профессиональное портфолио full-stack разработчика. Демонстрация проектов, навыков и опыта с современным минималистичным дизайном и темной темой.",
-    url: "https://murat-sahin-dev.vercel.app/",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS", ".NET Core"],
+      "Запустили маркетинг с нуля для EdTech-стартапа. Выстроили воронку от осведомлённости до покупки через 4 канала одновременно. За год — 12 000 платных пользователей.",
+    url: "#portfolio",
+    tags: ["Стратегия", "SEO", "Таргетинг", "Аналитика"],
   },
 ]
 
@@ -46,9 +46,9 @@ export function PortfolioSection() {
     <section id="portfolio" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance">Наше портфолио</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance">Наши кейсы</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto text-pretty leading-relaxed">
-            Ознакомьтесь с подборкой наших последних проектов и узнайте, как мы помогаем бизнесу расти с помощью мощных цифровых решений.
+            Реальные результаты для реального бизнеса. Каждый кейс — это измеримый рост, который мы достигли вместе с клиентом.
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export function PortfolioSection() {
                     className="gap-2"
                     onClick={() => window.open(project.url, "_blank")}
                   >
-                    Открыть проект <ExternalLink className="h-4 w-4" />
+                    Подробнее <ExternalLink className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

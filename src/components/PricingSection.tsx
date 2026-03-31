@@ -4,39 +4,39 @@ import { QuoteFormDialog } from "@/components/QuoteFormDialog"
 
 const pricingTiers = [
   {
-    name: "Базовый",
-    price: "99 900",
+    name: "Старт",
+    price: "49 900",
     features: [
-      "До 5 страниц",
-      "Адаптивный дизайн",
-      "Базовая SEO-оптимизация",
-      "Форма обратной связи",
-      "1 месяц поддержки",
+      "1 канал продвижения",
+      "Маркетинговая стратегия",
+      "8 постов в месяц",
+      "Базовая аналитика",
+      "Ежемесячный отчёт",
     ],
     highlighted: false,
   },
   {
-    name: "Про",
-    price: "249 900",
+    name: "Матрица",
+    price: "129 900",
     features: [
-      "До 15 страниц",
-      "Премиум-дизайн",
-      "Расширенная SEO-оптимизация",
-      "Интеграция CMS",
-      "Функционал e-commerce",
-      "3 месяца поддержки",
+      "3 канала продвижения",
+      "Полная стратегия и контент-план",
+      "Таргетированная реклама",
+      "SEO-оптимизация",
+      "Сквозная аналитика",
+      "Еженедельные отчёты",
     ],
     highlighted: true,
   },
   {
-    name: "Индивидуальный",
+    name: "Система",
     price: "По запросу",
     features: [
-      "Неограниченно страниц",
-      "Кастомный функционал",
-      "API-интеграции",
-      "Персональный менеджер",
-      "6 месяцев поддержки",
+      "Все каналы продвижения",
+      "Выделенная команда",
+      "Персональный стратег",
+      "Приоритетная поддержка",
+      "Дашборд в реальном времени",
     ],
     highlighted: false,
   },
@@ -60,10 +60,10 @@ export function PricingSection() {
             Прозрачные цены
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-balance">
-            Выберите <span className="text-primary">идеальный тариф</span> для вашего проекта
+            Выберите <span className="text-primary">подходящий тариф</span> для вашего бизнеса
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            От стартапов до крупного бизнеса — у нас есть подходящее решение
+            От первых шагов в маркетинге до полноценной системы привлечения клиентов
           </p>
         </div>
 
@@ -121,8 +121,8 @@ export function PricingSection() {
 
         <div className="mt-12 text-center">
           <p className="text-sm text-muted-foreground">
-            Все тарифы включают <span className="text-primary font-semibold">бесплатную настройку хостинга</span> и{" "}
-            <span className="text-primary font-semibold">SSL-сертификат</span>
+            Все тарифы включают <span className="text-primary font-semibold">бесплатный аудит текущего маркетинга</span> и{" "}
+            <span className="text-primary font-semibold">стратегическую сессию</span> при старте
           </p>
         </div>
       </div>
