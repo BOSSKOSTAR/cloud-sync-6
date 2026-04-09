@@ -9,10 +9,10 @@
     /* Тема "Рубль" — зелёный, золотой, бордовый */
     --background: 120 8% 97%;
     --foreground: 120 15% 8%;
-    --card: 0 0% 100%;
-    --card-foreground: 120 15% 8%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 120 15% 8%;
+    --card: 142 20% 12%;
+    --card-foreground: 43 60% 92%;
+    --popover: 142 20% 12%;
+    --popover-foreground: 43 60% 92%;
     --primary: 142 45% 28%; /* Тёмно-зелёный */
     --primary-foreground: 0 0% 100%;
     --secondary: 43 60% 92%; /* Светло-золотой */
@@ -105,6 +105,27 @@
     position: relative;
     z-index: 1;
   }
+}
+
+/* Glassmorphism для карточек и панелей */
+.glass {
+  background: rgba(10, 30, 15, 0.55) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(180, 150, 50, 0.18) !important;
+}
+
+[class*="card"],
+[class*="Card"],
+aside,
+header,
+nav,
+.sidebar,
+[data-sidebar] {
+  background: rgba(10, 30, 15, 0.55) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(180, 150, 50, 0.18) !important;
 }
 
 /* Custom animations for scroll effects */
