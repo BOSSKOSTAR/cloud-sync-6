@@ -85,7 +85,11 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply text-foreground font-sans antialiased;
+    background-image: url("https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/bucket/58e85b80-5220-4032-b1a3-e8a5db51b0e0.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
 }
 
