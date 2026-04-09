@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,76 +6,76 @@
 
 @layer base {
   :root {
-    /* Custom color palette for CodeCraft light mode */
-    --background: 0 0% 99%;
-    --foreground: 240 10% 10%;
+    /* Тема "Рубль" — зелёный, золотой, бордовый */
+    --background: 120 8% 97%;
+    --foreground: 120 15% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
+    --card-foreground: 120 15% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
-    --primary: 350 100% 50%; /* Bright red #FF0035 */
+    --popover-foreground: 120 15% 8%;
+    --primary: 142 45% 28%; /* Тёмно-зелёный */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 95%;
-    --secondary-foreground: 240 10% 10%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 5% 45%;
-    --accent: 350 100% 50%;
+    --secondary: 43 60% 92%; /* Светло-золотой */
+    --secondary-foreground: 120 15% 8%;
+    --muted: 120 8% 94%;
+    --muted-foreground: 120 5% 45%;
+    --accent: 43 85% 45%; /* Золотой */
     --accent-foreground: 0 0% 100%;
-    --destructive: 350 100% 50%;
+    --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 5% 90%;
-    --input: 240 5% 90%;
-    --ring: 350 100% 50%;
+    --border: 120 8% 88%;
+    --input: 120 8% 88%;
+    --ring: 142 45% 28%;
     --radius: 0.5rem;
-    --chart-1: 350 100% 50%;
-    --chart-2: 240 5% 35%;
-    --chart-3: 240 5% 45%;
-    --chart-4: 240 5% 55%;
-    --chart-5: 240 5% 65%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 240 5% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 5% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --chart-1: 142 45% 28%;
+    --chart-2: 43 85% 45%;
+    --chart-3: 350 60% 35%;
+    --chart-4: 120 20% 50%;
+    --chart-5: 43 50% 65%;
+    --sidebar-background: 142 30% 12%;
+    --sidebar-foreground: 43 60% 90%;
+    --sidebar-primary: 43 85% 50%;
+    --sidebar-primary-foreground: 120 15% 8%;
+    --sidebar-accent: 142 30% 20%;
+    --sidebar-accent-foreground: 43 60% 90%;
+    --sidebar-border: 142 25% 20%;
+    --sidebar-ring: 43 85% 50%;
   }
 
   .dark {
-    /* Custom color palette for CodeCraft dark mode */
-    --background: 240 10% 9%; /* #0E131F */
-    --foreground: 0 0% 98%;
-    --card: 240 10% 13%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 11%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 350 100% 50%; /* Bright red #FF0035 */
+    /* Тема "Рубль" тёмная */
+    --background: 142 20% 6%;
+    --foreground: 43 60% 92%;
+    --card: 142 20% 9%;
+    --card-foreground: 43 60% 92%;
+    --popover: 142 20% 8%;
+    --popover-foreground: 43 60% 92%;
+    --primary: 142 50% 42%; /* Зелёный */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 10% 22%; /* #38405F */
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 10% 26%; /* #59546C */
-    --muted-foreground: 240 5% 55%; /* #8B939C */
-    --accent: 350 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 350 100% 50%;
+    --secondary: 142 20% 15%;
+    --secondary-foreground: 43 60% 90%;
+    --muted: 142 20% 13%;
+    --muted-foreground: 120 10% 55%;
+    --accent: 43 85% 50%; /* Золотой */
+    --accent-foreground: 120 15% 8%;
+    --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 10% 22%;
-    --input: 240 10% 22%;
-    --ring: 350 100% 50%;
-    --chart-1: 350 100% 50%;
-    --chart-2: 240 10% 35%;
-    --chart-3: 240 10% 45%;
-    --chart-4: 240 10% 55%;
-    --chart-5: 240 10% 65%;
-    --sidebar-background: 240 5% 10%;
-    --sidebar-foreground: 240 5% 96%;
-    --sidebar-primary: 217 76% 48%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4% 27%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 4% 27%;
-    --sidebar-ring: 217 91% 44%;
+    --border: 142 20% 16%;
+    --input: 142 20% 16%;
+    --ring: 142 50% 42%;
+    --chart-1: 142 50% 42%;
+    --chart-2: 43 85% 50%;
+    --chart-3: 350 60% 45%;
+    --chart-4: 120 25% 55%;
+    --chart-5: 43 50% 70%;
+    --sidebar-background: 142 25% 5%;
+    --sidebar-foreground: 43 60% 90%;
+    --sidebar-primary: 43 85% 50%;
+    --sidebar-primary-foreground: 120 15% 8%;
+    --sidebar-accent: 142 25% 12%;
+    --sidebar-accent-foreground: 43 60% 90%;
+    --sidebar-border: 142 25% 14%;
+    --sidebar-ring: 43 85% 50%;
   }
 }
 
