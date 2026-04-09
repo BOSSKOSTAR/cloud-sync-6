@@ -166,20 +166,20 @@ export default function Dashboard() {
     { key: 'wallet', label: 'Кошелёк', icon: 'Wallet' },
   ]
 
-  const inputCls = 'w-full bg-black/30 border border-yellow-700/40 rounded-lg px-3 py-2 text-yellow-100 placeholder:text-yellow-900/60 focus:outline-none focus:border-yellow-500/60'
+  const inputCls = 'w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white placeholder:text-white/30 focus:outline-none focus:border-white/40'
 
   return (
-    <div className="min-h-screen text-yellow-100">
+    <div className="min-h-screen text-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-yellow-700/30" style={{ background: 'rgba(5, 20, 10, 0.85)' }}>
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/10" style={{ background: 'rgba(5, 20, 10, 0.85)' }}>
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-700 flex items-center justify-center text-xs font-bold text-green-900">П</div>
-            <span className="font-bold text-yellow-300">Плям про<span className="text-yellow-500">100</span></span>
+            <span className="font-bold text-white">Плям про<span className="text-yellow-400">100</span></span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-yellow-600 text-sm hidden md:block">{user.name}</span>
-            <Button variant="ghost" size="sm" className="text-yellow-700 hover:text-yellow-400" onClick={() => { logout(); navigate('/') }}>
+            <span className="text-white/50 text-sm hidden md:block">{user.name}</span>
+            <Button variant="ghost" size="sm" className="text-white/50 hover:text-white" onClick={() => { logout(); navigate('/') }}>
               <Icon name="LogOut" size={16} />
             </Button>
           </div>
@@ -190,29 +190,29 @@ export default function Dashboard() {
         {/* Balance cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           <div className="col-span-2 md:col-span-1 rounded-2xl p-4 border border-yellow-600/40" style={{ background: 'rgba(120, 90, 0, 0.35)', backdropFilter: 'blur(12px)' }}>
-            <div className="text-yellow-600 text-sm mb-1">Баланс</div>
-            <div className="text-2xl font-bold text-yellow-300">{balance.toLocaleString('ru')} ₽</div>
+            <div className="text-white/50 text-sm mb-1">Баланс</div>
+            <div className="text-2xl font-bold text-white">{balance.toLocaleString('ru')} ₽</div>
           </div>
-          <div className="rounded-2xl p-4 border border-yellow-800/30" style={{ background: 'rgba(5, 30, 10, 0.55)', backdropFilter: 'blur(12px)' }}>
-            <div className="text-yellow-700 text-sm mb-1">Заработано всего</div>
+          <div className="rounded-2xl p-4 border border-white/10" style={{ background: 'rgba(5, 30, 10, 0.55)', backdropFilter: 'blur(12px)' }}>
+            <div className="text-white/50 text-sm mb-1">Заработано всего</div>
             <div className="text-xl font-bold text-green-400">{totalEarned.toLocaleString('ru')} ₽</div>
           </div>
-          <div className="rounded-2xl p-4 border border-yellow-800/30" style={{ background: 'rgba(5, 30, 10, 0.55)', backdropFilter: 'blur(12px)' }}>
-            <div className="text-yellow-700 text-sm mb-1">Матриц активных</div>
-            <div className="text-xl font-bold text-yellow-300">{matrices.filter(m => m.status === 'active').length}</div>
+          <div className="rounded-2xl p-4 border border-white/10" style={{ background: 'rgba(5, 30, 10, 0.55)', backdropFilter: 'blur(12px)' }}>
+            <div className="text-white/50 text-sm mb-1">Матриц активных</div>
+            <div className="text-xl font-bold text-white">{matrices.filter(m => m.status === 'active').length}</div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 rounded-xl p-1 mb-6 border border-yellow-800/30" style={{ background: 'rgba(5, 20, 10, 0.5)', backdropFilter: 'blur(12px)' }}>
+        <div className="flex gap-1 rounded-xl p-1 mb-6 border border-white/10" style={{ background: 'rgba(5, 20, 10, 0.5)', backdropFilter: 'blur(12px)' }}>
           {tabs.map(t => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-sm font-medium transition-all ${
                 tab === t.key
-                  ? 'bg-gradient-to-r from-yellow-700 to-yellow-600 text-yellow-100'
-                  : 'text-yellow-700 hover:text-yellow-400'
+                  ? 'bg-gradient-to-r from-yellow-700 to-yellow-600 text-white'
+                  : 'text-white/40 hover:text-white'
               }`}
             >
               <Icon name={t.icon} size={14} />
@@ -224,26 +224,22 @@ export default function Dashboard() {
         {/* Overview */}
         {tab === 'overview' && (
           <div className="space-y-4">
-            <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-              <h3 className="font-semibold mb-4 text-yellow-400">Реферальная ссылка</h3>
+            <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+              <h3 className="font-semibold mb-4 text-white">Реферальная ссылка</h3>
               <div className="flex gap-2">
-                <input
-                  readOnly
-                  value={refUrl}
-                  className={inputCls + ' min-w-0 flex-1'}
-                />
-                <Button onClick={copyRef} className="bg-yellow-700 hover:bg-yellow-600 text-yellow-100 shrink-0">
+                <input readOnly value={refUrl} className={inputCls + ' min-w-0 flex-1'} />
+                <Button onClick={copyRef} className="bg-yellow-700 hover:bg-yellow-600 text-white shrink-0">
                   <Icon name={copied ? 'Check' : 'Copy'} size={16} />
                 </Button>
               </div>
-              <p className="text-yellow-800 text-xs mt-2">Код: <span className="text-yellow-600 font-mono">{user.referral_code}</span></p>
+              <p className="text-white/30 text-xs mt-2">Код: <span className="text-white/60 font-mono">{user.referral_code}</span></p>
             </div>
 
-            <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-              <h3 className="font-semibold mb-4 text-yellow-400">Доступные тарифы</h3>
+            <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+              <h3 className="font-semibold mb-4 text-white">Доступные тарифы</h3>
               {loading ? (
                 <div className="flex justify-center py-8">
-                  <Icon name="Loader2" size={24} className="animate-spin text-yellow-600" />
+                  <Icon name="Loader2" size={24} className="animate-spin text-white/40" />
                 </div>
               ) : (
                 <div className="grid md:grid-cols-3 gap-4">
@@ -255,9 +251,9 @@ export default function Dashboard() {
                       major: 'from-yellow-700 to-amber-600',
                     }
                     return (
-                      <div key={t.id} className="rounded-xl p-4 border border-yellow-800/30" style={{ background: 'rgba(10, 35, 15, 0.7)', backdropFilter: 'blur(8px)' }}>
-                        <div className="font-semibold mb-1 text-yellow-300">{t.name}</div>
-                        <div className="text-2xl font-bold mb-3 text-yellow-400">{t.price.toLocaleString('ru')} ₽</div>
+                      <div key={t.id} className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(10, 35, 15, 0.7)', backdropFilter: 'blur(8px)' }}>
+                        <div className="font-semibold mb-1 text-white">{t.name}</div>
+                        <div className="text-2xl font-bold mb-3 text-white">{t.price.toLocaleString('ru')} ₽</div>
                         {isActive ? (
                           <div className="text-green-400 text-sm flex items-center gap-1">
                             <Icon name="CheckCircle" size={14} /> Активен
@@ -265,7 +261,7 @@ export default function Dashboard() {
                         ) : (
                           <Button
                             size="sm"
-                            className={`w-full bg-gradient-to-r ${gradients[t.slug] || 'from-yellow-800 to-yellow-700'} text-yellow-100 hover:opacity-90`}
+                            className={`w-full bg-gradient-to-r ${gradients[t.slug] || 'from-yellow-800 to-yellow-700'} text-white hover:opacity-90`}
                             onClick={() => buyTariff(t.id)}
                             disabled={buyingId === t.id || balance < t.price}
                           >
@@ -286,26 +282,26 @@ export default function Dashboard() {
         {tab === 'matrices' && (
           <div className="space-y-4">
             {matrices.length === 0 ? (
-              <div className="rounded-2xl p-12 text-center border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-                <Icon name="Grid3X3" size={40} className="text-yellow-800 mx-auto mb-3" />
-                <div className="text-yellow-700">Нет активных матриц</div>
-                <Button className="mt-4 bg-yellow-700 hover:bg-yellow-600 text-yellow-100" onClick={() => setTab('overview')}>Купить тариф</Button>
+              <div className="rounded-2xl p-12 text-center border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+                <Icon name="Grid3X3" size={40} className="text-white/20 mx-auto mb-3" />
+                <div className="text-white/50">Нет активных матриц</div>
+                <Button className="mt-4 bg-yellow-700 hover:bg-yellow-600 text-white" onClick={() => setTab('overview')}>Купить тариф</Button>
               </div>
             ) : (
               matrices.map(m => (
-                <div key={m.id} className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+                <div key={m.id} className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <div className="font-semibold text-yellow-300">Тариф «{m.tariff_name}»</div>
-                      <div className="text-yellow-700 text-sm">Вход: {m.entry_price.toLocaleString('ru')} ₽</div>
+                      <div className="font-semibold text-white">Тариф «{m.tariff_name}»</div>
+                      <div className="text-white/50 text-sm">Вход: {m.entry_price.toLocaleString('ru')} ₽</div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${m.status === 'active' ? 'bg-green-900/50 text-green-400' : 'bg-yellow-900/30 text-yellow-700'}`}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${m.status === 'active' ? 'bg-green-900/50 text-green-400' : 'bg-white/10 text-white/50'}`}>
                       {m.status === 'active' ? 'Активна' : 'Завершена'}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="text-sm text-yellow-700">Уровень: <span className="text-yellow-300 font-semibold">{m.level}</span></div>
-                    <div className="text-sm text-yellow-700">Слотов заполнено: <span className="text-yellow-300 font-semibold">{m.slots_filled}</span></div>
+                    <div className="text-sm text-white/50">Уровень: <span className="text-white font-semibold">{m.level}</span></div>
+                    <div className="text-sm text-white/50">Слотов заполнено: <span className="text-white font-semibold">{m.slots_filled}</span></div>
                   </div>
                 </div>
               ))
@@ -316,33 +312,33 @@ export default function Dashboard() {
         {/* Referrals */}
         {tab === 'referrals' && (
           <div className="space-y-4">
-            <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-              <h3 className="font-semibold mb-2 text-yellow-400">Твоя реферальная ссылка</h3>
+            <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+              <h3 className="font-semibold mb-2 text-white">Твоя реферальная ссылка</h3>
               <div className="flex gap-2 mb-4">
                 <input readOnly value={refUrl} className={inputCls + ' min-w-0 flex-1'} />
-                <Button onClick={copyRef} className="bg-yellow-700 hover:bg-yellow-600 text-yellow-100 shrink-0">
+                <Button onClick={copyRef} className="bg-yellow-700 hover:bg-yellow-600 text-white shrink-0">
                   <Icon name={copied ? 'Check' : 'Copy'} size={16} />
                 </Button>
               </div>
-              <p className="text-yellow-800 text-xs">Приглашай по этой ссылке и получай выплаты за каждого участника</p>
+              <p className="text-white/30 text-xs">Приглашай по этой ссылке и получай выплаты за каждого участника</p>
             </div>
 
-            <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-              <h3 className="font-semibold mb-4 text-yellow-400">Мои рефералы ({referrals.length})</h3>
+            <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+              <h3 className="font-semibold mb-4 text-white">Мои рефералы ({referrals.length})</h3>
               {referrals.length === 0 ? (
-                <div className="text-yellow-800 text-center py-6">Рефералов пока нет</div>
+                <div className="text-white/30 text-center py-6">Рефералов пока нет</div>
               ) : (
                 <div className="space-y-2">
                   {referrals.map((r, i) => (
-                    <div key={i} className="flex items-center justify-between rounded-xl px-4 py-3 border border-yellow-900/30" style={{ background: 'rgba(10, 35, 15, 0.5)' }}>
+                    <div key={i} className="flex items-center justify-between rounded-xl px-4 py-3 border border-white/10" style={{ background: 'rgba(10, 35, 15, 0.5)' }}>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-yellow-800/50 flex items-center justify-center text-xs font-bold text-yellow-300">{r.name[0].toUpperCase()}</div>
+                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white">{r.name[0].toUpperCase()}</div>
                         <div>
-                          <div className="font-medium text-yellow-300">{r.name}</div>
-                          <div className="text-yellow-800 text-xs">{new Date(r.joined).toLocaleDateString('ru')}</div>
+                          <div className="font-medium text-white">{r.name}</div>
+                          <div className="text-white/40 text-xs">{new Date(r.joined).toLocaleDateString('ru')}</div>
                         </div>
                       </div>
-                      <div className="text-sm text-yellow-600">{r.matrices} матриц</div>
+                      <div className="text-sm text-white/50">{r.matrices} матриц</div>
                     </div>
                   ))}
                 </div>
@@ -355,8 +351,8 @@ export default function Dashboard() {
         {tab === 'wallet' && (
           <div className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-                <h3 className="font-semibold mb-4 flex items-center gap-2 text-yellow-400">
+              <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+                <h3 className="font-semibold mb-4 flex items-center gap-2 text-white">
                   <Icon name="Plus" size={16} className="text-green-400" /> Пополнить баланс
                 </h3>
                 <input
@@ -366,40 +362,40 @@ export default function Dashboard() {
                   onChange={e => setTopupAmount(e.target.value)}
                   className={inputCls + ' mb-3'}
                 />
-                <Button className="w-full bg-green-800 hover:bg-green-700 text-green-100" onClick={handleTopup}>
+                <Button className="w-full bg-green-800 hover:bg-green-700 text-white" onClick={handleTopup}>
                   Пополнить через FreeKassa
                 </Button>
               </div>
 
-              <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-                <h3 className="font-semibold mb-4 flex items-center gap-2 text-yellow-400">
-                  <Icon name="ArrowUpRight" size={16} className="text-yellow-500" /> Вывести средства (СБП)
+              <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+                <h3 className="font-semibold mb-4 flex items-center gap-2 text-white">
+                  <Icon name="ArrowUpRight" size={16} className="text-yellow-400" /> Вывести средства (СБП)
                 </h3>
                 <div className="space-y-2 mb-3">
                   <input type="number" placeholder="Сумма" value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} className={inputCls} />
                   <input type="text" placeholder="+7 999 999-99-99" value={withdrawPhone} onChange={e => setWithdrawPhone(e.target.value)} className={inputCls} />
                   <input type="text" placeholder="Банк (Сбер, Тинькофф...)" value={withdrawBank} onChange={e => setWithdrawBank(e.target.value)} className={inputCls} />
                 </div>
-                <Button className="w-full bg-yellow-700 hover:bg-yellow-600 text-yellow-100" onClick={handleWithdraw}>
+                <Button className="w-full bg-yellow-700 hover:bg-yellow-600 text-white" onClick={handleWithdraw}>
                   Запросить вывод
                 </Button>
-                <p className="text-yellow-800 text-xs mt-2">Доступно: {balance.toLocaleString('ru')} ₽</p>
+                <p className="text-white/30 text-xs mt-2">Доступно: {balance.toLocaleString('ru')} ₽</p>
               </div>
             </div>
 
-            <div className="rounded-2xl p-6 border border-yellow-800/30" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-              <h3 className="font-semibold mb-4 text-yellow-400">История операций</h3>
+            <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
+              <h3 className="font-semibold mb-4 text-white">История операций</h3>
               {transactions.length === 0 ? (
-                <div className="text-yellow-800 text-center py-6">Операций пока нет</div>
+                <div className="text-white/30 text-center py-6">Операций пока нет</div>
               ) : (
                 <div className="space-y-2">
                   {transactions.map(tx => {
                     const isIncome = ['topup', 'matrix_payout'].includes(tx.type)
                     return (
-                      <div key={tx.id} className="flex items-center justify-between rounded-xl px-4 py-3 border border-yellow-900/30" style={{ background: 'rgba(10, 35, 15, 0.5)' }}>
+                      <div key={tx.id} className="flex items-center justify-between rounded-xl px-4 py-3 border border-white/10" style={{ background: 'rgba(10, 35, 15, 0.5)' }}>
                         <div>
-                          <div className="font-medium text-sm text-yellow-300">{TYPE_LABELS[tx.type] || tx.type}</div>
-                          <div className="text-yellow-800 text-xs">{new Date(tx.created_at).toLocaleString('ru')}</div>
+                          <div className="font-medium text-sm text-white">{TYPE_LABELS[tx.type] || tx.type}</div>
+                          <div className="text-white/40 text-xs">{new Date(tx.created_at).toLocaleString('ru')}</div>
                         </div>
                         <div className={`font-bold ${isIncome ? 'text-green-400' : 'text-red-400'}`}>
                           {isIncome ? '+' : '-'}{Math.abs(tx.amount).toLocaleString('ru')} ₽
