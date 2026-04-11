@@ -408,6 +408,11 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-white/10 text-center text-white/30 text-sm">
+        <div className="mb-4">
+          <a href="https://freekassa.net" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn.freekassa.net/banners/big-dark-1.png" title="Прием платежей на сайте для физических лиц и т.д." alt="Free Kassa" className="mx-auto" />
+          </a>
+        </div>
         © 2026 Плям про100 · Матричная система заработка
       </footer>
     </div>
