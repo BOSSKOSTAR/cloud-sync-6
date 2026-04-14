@@ -14,8 +14,8 @@ async function call(url: string, body: object) {
 }
 
 export const api = {
-  register: (name: string, password: string, ref_code?: string) =>
-    call(URLS.auth, { action: 'register', name, password, ref_code }),
+  register: (name: string, email: string, password: string, ref_code?: string) =>
+    call(URLS.auth, { action: 'register', name, email, password, ref_code }),
 
   login: (name: string, password: string) =>
     call(URLS.auth, { action: 'login', name, password }),

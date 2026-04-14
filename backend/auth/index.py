@@ -29,10 +29,17 @@ def handler(event: dict, context) -> dict:
     if action == 'register':
         name = body.get('name', '').strip()
         password = body.get('password', '').strip()
+        email = body.get('email', '').strip()
         ref_code = body.get('ref_code', '').strip()
 
-        if not name or not password:
-            return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Имя и пароль обязательны'})}
+        if not name or not password or not email:
+            return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Имя, email и пароль обязательны'})}
+
+        cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+        if cur.fetchone():
+            cur.close()
+            conn.close()
+            return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Email уже зарегистрирован'})}
 
         referrer_id = None
         if ref_code:
@@ -43,14 +50,14 @@ def handler(event: dict, context) -> dict:
 
         my_code = generate_referral_code()
         cur.execute(
-            "INSERT INTO users (name, password_hash, referral_code, referred_by) VALUES (%s, %s, %s, %s) RETURNING id",
-            (name, hash_password(password), my_code, referrer_id)
+            "INSERT INTO users (name, password_hash, referral_code, referred_by, email) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+            (name, hash_password(password), my_code, referrer_id, email)
         )
         user_id = cur.fetchone()[0]
         conn.commit()
         cur.close()
         conn.close()
-        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'user_id': user_id, 'referral_code': my_code, 'name': name})}
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'user_id': user_id, 'referral_code': my_code, 'name': name, 'email': email})}
 
     elif action == 'login':
         name = body.get('name', '').strip()

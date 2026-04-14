@@ -13,6 +13,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
   const refCode = searchParams.get('ref') || ''
 
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [ref, setRef] = useState(refCode)
   const [loading, setLoading] = useState(false)
@@ -23,11 +24,15 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
       toast.error('Заполни все поля')
       return
     }
+    if (mode === 'register' && !email.trim()) {
+      toast.error('Введи email')
+      return
+    }
     setLoading(true)
     try {
       let res
       if (mode === 'register') {
-        res = await api.register(name.trim(), password.trim(), ref.trim() || undefined)
+        res = await api.register(name.trim(), email.trim(), password.trim(), ref.trim() || undefined)
         if (res.error) { toast.error(res.error); return }
         toast.success('Аккаунт создан!')
       } else {
@@ -65,6 +70,18 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
                 autoFocus
               />
             </div>
+            {mode === 'register' && (
+              <div>
+                <Label className="text-white/70 mb-1.5 block">Email</Label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="example@mail.ru"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30"
+                />
+              </div>
+            )}
             <div>
               <Label className="text-white/70 mb-1.5 block">Пароль</Label>
               <Input
