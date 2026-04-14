@@ -290,11 +290,16 @@ export default function Dashboard() {
             ) : (
               matrices.map(m => {
                 const levelSlots = [2, 2, 4, 4, 4]
+                const levelMultiplier = [1, 2, 4, 8, 16]
                 const totalSlotsBefore = levelSlots.slice(0, m.level - 1).reduce((a, b) => a + b, 0)
                 const currentLevelSlots = levelSlots[m.level - 1] ?? 4
                 const filledInLevel = Math.max(0, m.slots_filled - totalSlotsBefore)
                 const progress = Math.min(100, Math.round((filledInLevel / currentLevelSlots) * 100))
                 const slotsLeft = currentLevelSlots - filledInLevel
+                const levelPayout = m.entry_price * levelMultiplier[m.level - 1]
+                const nextTariff = m.tariff_slug === 'mini' ? { name: 'Минор', price: 6000 } : m.tariff_slug === 'minor' ? { name: 'Мажор', price: 120000 } : null
+                const isLastLevel = m.level === 5
+                const netPayout = isLastLevel && nextTariff ? levelPayout * currentLevelSlots - nextTariff.price : levelPayout * currentLevelSlots
 
                 const tariffColors: Record<string, { bar: string; badge: string; dot: string }> = {
                   mini:  { bar: 'bg-blue-500',   badge: 'bg-blue-900/50 text-blue-400',   dot: 'bg-blue-400' },
@@ -337,19 +342,30 @@ export default function Dashboard() {
 
                     {/* Current level progress */}
                     {m.status === 'active' && (
-                      <div className="bg-white/5 rounded-xl px-4 py-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-white/50 text-sm">Матрица {m.level} — заполнено слотов</span>
+                      <div className="bg-white/5 rounded-xl px-4 py-3 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/50 text-sm">Матрица {m.level} — слоты</span>
                           <span className="text-white font-semibold text-sm">{filledInLevel} / {currentLevelSlots}</span>
                         </div>
                         <div className="h-2 rounded-full bg-white/10 overflow-hidden">
                           <div className={`h-full rounded-full transition-all duration-500 ${colors.bar}`} style={{ width: `${progress}%` }} />
                         </div>
-                        <div className="mt-2 text-xs text-white/30">
-                          {slotsLeft > 0
-                            ? `Ещё ${slotsLeft} ${slotsLeft === 1 ? 'слот' : slotsLeft < 5 ? 'слота' : 'слотов'} до перехода на матрицу ${m.level + 1}`
-                            : 'Переход на следующую матрицу!'
-                          }
+                        <div className="flex items-center justify-between pt-1 border-t border-white/10">
+                          <div className="text-xs text-white/30">
+                            {slotsLeft > 0
+                              ? `Ещё ${slotsLeft} ${slotsLeft === 1 ? 'слот' : slotsLeft < 5 ? 'слота' : 'слотов'} до ${isLastLevel ? 'выплаты' : `матрицы ${m.level + 1}`}`
+                              : isLastLevel ? 'Финальная выплата!' : 'Переход на следующую матрицу!'
+                            }
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-white/30">выплата</div>
+                            <div className="text-green-400 font-bold text-sm">
+                              {netPayout.toLocaleString('ru')} ₽
+                            </div>
+                            {isLastLevel && nextTariff && (
+                              <div className="text-yellow-400/60 text-[10px]">−{nextTariff.price.toLocaleString('ru')} ₽ «{nextTariff.name}»</div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
