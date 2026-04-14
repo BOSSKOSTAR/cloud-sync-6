@@ -78,38 +78,41 @@ export default function Landing() {
       key: 'mini', name: 'Мини', price: 300,
       color: 'from-blue-500 to-blue-700', border: 'border-blue-500',
       glow: 'shadow-blue-500/20',
+      nextTariff: { name: 'Минор', price: 6000 },
       levels: [
-        { level: 1, payout: 300, slots: 2 },
-        { level: 2, payout: 600, slots: 2 },
-        { level: 3, payout: 1200, slots: 4 },
-        { level: 4, payout: 2400, slots: 4 },
-        { level: 5, payout: 4800, slots: 4 },
+        { level: 1, payout: 300, slots: 2, autoBuy: null },
+        { level: 2, payout: 600, slots: 2, autoBuy: null },
+        { level: 3, payout: 1200, slots: 4, autoBuy: null },
+        { level: 4, payout: 2400, slots: 4, autoBuy: null },
+        { level: 5, payout: 4800, slots: 4, autoBuy: { name: 'Минор', price: 6000 } },
       ],
-      total: 14700,
+      total: 8700,
     },
     {
       key: 'minor', name: 'Минор', price: 6000,
       color: 'from-purple-500 to-purple-700', border: 'border-purple-500',
       glow: 'shadow-purple-500/20',
+      nextTariff: { name: 'Мажор', price: 120000 },
       levels: [
-        { level: 1, payout: 6000, slots: 2 },
-        { level: 2, payout: 12000, slots: 2 },
-        { level: 3, payout: 24000, slots: 4 },
-        { level: 4, payout: 48000, slots: 4 },
-        { level: 5, payout: 96000, slots: 4 },
+        { level: 1, payout: 6000, slots: 2, autoBuy: null },
+        { level: 2, payout: 12000, slots: 2, autoBuy: null },
+        { level: 3, payout: 24000, slots: 4, autoBuy: null },
+        { level: 4, payout: 48000, slots: 4, autoBuy: null },
+        { level: 5, payout: 96000, slots: 4, autoBuy: { name: 'Мажор', price: 120000 } },
       ],
-      total: 294000,
+      total: 174000,
     },
     {
       key: 'major', name: 'Мажор', price: 120000,
       color: 'from-yellow-500 to-orange-600', border: 'border-yellow-500',
       glow: 'shadow-yellow-500/20',
+      nextTariff: null,
       levels: [
-        { level: 1, payout: 120000, slots: 2 },
-        { level: 2, payout: 240000, slots: 2 },
-        { level: 3, payout: 480000, slots: 4 },
-        { level: 4, payout: 960000, slots: 4 },
-        { level: 5, payout: 1920000, slots: 4 },
+        { level: 1, payout: 120000, slots: 2, autoBuy: null },
+        { level: 2, payout: 240000, slots: 2, autoBuy: null },
+        { level: 3, payout: 480000, slots: 4, autoBuy: null },
+        { level: 4, payout: 960000, slots: 4, autoBuy: null },
+        { level: 5, payout: 1920000, slots: 4, autoBuy: null },
       ],
       total: 5880000,
     },
@@ -366,7 +369,8 @@ export default function Landing() {
                 const isLast = i === activeTariff.levels.length - 1
                 const slots = l.slots
                 const payout = l.payout
-                const isPayoutLevel = l.level === 1 || l.level === 3
+                const autoBuy = l.autoBuy
+                const netPayout = autoBuy ? (payout * slots) - autoBuy.price : payout * slots
                 return (
                   <div key={l.level} className="relative">
                     {/* Level header */}
@@ -376,7 +380,12 @@ export default function Landing() {
                       </div>
                       <div className="text-sm text-white/60">Матрица {l.level}</div>
                       <div className="flex-1 h-px bg-white/10" />
-                      <div className="text-sm font-semibold text-green-400">+{(payout * slots).toLocaleString('ru')} ₽</div>
+                      <div className="text-sm font-semibold text-green-400">
+                        {autoBuy
+                          ? <span>+{netPayout.toLocaleString('ru')} ₽ <span className="text-white/30 font-normal text-xs">чистыми</span></span>
+                          : <span>+{(payout * slots).toLocaleString('ru')} ₽</span>
+                        }
+                      </div>
                     </div>
 
                     {/* Nodes row */}
@@ -411,10 +420,10 @@ export default function Landing() {
                         })}
                       </div>
 
-                      {/* Action label */}
-                      <div className="w-full flex justify-center gap-4 mt-2 flex-wrap">
+                      {/* Action labels */}
+                      <div className="w-full flex justify-center gap-2 mt-2 flex-wrap">
                         <div className="bg-green-500/20 border border-green-500/30 text-green-300 text-xs px-3 py-1 rounded-full font-medium">
-                          выплата {payout.toLocaleString('ru')} ₽
+                          выплата {(payout * slots).toLocaleString('ru')} ₽
                         </div>
                         {!isLast && (
                           <div className="bg-orange-500/20 border border-orange-500/30 text-orange-300 text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1">
@@ -428,6 +437,23 @@ export default function Landing() {
                           </div>
                         )}
                       </div>
+
+                      {/* Auto-buy block for level 5 */}
+                      {autoBuy && (
+                        <div className="w-full mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl px-4 py-3">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-2">
+                              <Icon name="ShoppingCart" size={14} className="text-yellow-400" />
+                              <span className="text-yellow-300 text-xs font-medium">Автопокупка тарифа «{autoBuy.name}»</span>
+                            </div>
+                            <span className="text-red-400 text-xs font-semibold">−{autoBuy.price.toLocaleString('ru')} ₽</span>
+                          </div>
+                          <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
+                            <span className="text-white/50 text-xs">Чистая выплата на руки</span>
+                            <span className="text-green-400 text-sm font-bold">+{netPayout.toLocaleString('ru')} ₽</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Connector to next level */}
@@ -443,8 +469,14 @@ export default function Landing() {
 
             {/* Summary */}
             <div className="mt-8 bg-green-500/10 border border-green-500/20 rounded-xl px-5 py-4 text-center">
-              <div className="text-green-300 text-sm mb-1">Итоговый заработок за прохождение всех матриц</div>
+              <div className="text-green-300 text-sm mb-1">Чистый заработок за прохождение всех матриц</div>
               <div className="text-2xl font-bold text-green-400">{activeTariff.total.toLocaleString('ru')} ₽</div>
+              {activeTariff.nextTariff && (
+                <div className="text-yellow-400/70 text-xs mt-1 flex items-center justify-center gap-1">
+                  <Icon name="Info" size={11} />
+                  включает автопокупку тарифа «{activeTariff.nextTariff.name}» на 5-й матрице
+                </div>
+              )}
               <div className="text-white/40 text-xs mt-1">
                 × 25 клонов = {(activeTariff.total * 25).toLocaleString('ru')} ₽ потенциально
               </div>
