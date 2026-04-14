@@ -318,13 +318,32 @@ export default function Landing() {
                   <AnimatedNumber value={t.total} suffix=" ₽" duration={2500} />
                 </div>
                 <div className="space-y-1.5">
-                  {t.levels.map(l => (
-                    <div key={l.level} className="flex justify-between text-sm">
-                      <span className="text-white/40">Матрица {l.level}</span>
-                      <span className="text-white/80 font-medium">+{(l.payout * l.slots).toLocaleString('ru')} ₽</span>
-                    </div>
-                  ))}
+                  {t.levels.map(l => {
+                    const gross = l.payout * l.slots
+                    const net = l.autoBuy ? gross - l.autoBuy.price : gross
+                    return (
+                      <div key={l.level} className="flex justify-between text-sm">
+                        <span className="text-white/40">Матрица {l.level}</span>
+                        <div className="text-right">
+                          {l.autoBuy ? (
+                            <>
+                              <span className="text-white/40 line-through text-xs mr-1">{gross.toLocaleString('ru')}</span>
+                              <span className="text-green-400 font-medium">+{net.toLocaleString('ru')} ₽</span>
+                            </>
+                          ) : (
+                            <span className="text-white/80 font-medium">+{gross.toLocaleString('ru')} ₽</span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
+                {t.nextTariff && (
+                  <div className="mt-3 pt-3 border-t border-white/10 flex items-center gap-1.5 text-xs text-yellow-400/70">
+                    <Icon name="ShoppingCart" size={11} />
+                    5-я матрица → автопокупка «{t.nextTariff.name}»
+                  </div>
+                )}
               </div>
             ))}
           </div>
