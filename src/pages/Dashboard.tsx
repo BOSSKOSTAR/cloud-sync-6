@@ -224,15 +224,42 @@ export default function Dashboard() {
         {/* Overview */}
         {tab === 'overview' && (
           <div className="space-y-4">
-            <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
-              <h3 className="font-semibold mb-4 text-white">Реферальная ссылка</h3>
-              <div className="flex gap-2">
-                <input readOnly value={refUrl} className={inputCls + ' min-w-0 flex-1'} />
-                <Button onClick={copyRef} className="bg-yellow-700 hover:bg-yellow-600 text-white shrink-0">
-                  <Icon name={copied ? 'Check' : 'Copy'} size={16} />
-                </Button>
+            {/* Реферальная ссылка — главный блок */}
+            <div className="rounded-2xl p-6 border border-yellow-600/40 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(120,80,0,0.45) 0%, rgba(5,25,10,0.7) 100%)', backdropFilter: 'blur(12px)' }}>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#ca8a0422_0%,_transparent_60%)]" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-1">
+                  <Icon name="Share2" size={18} className="text-yellow-400" />
+                  <h3 className="font-bold text-lg text-white">Твоя реферальная ссылка</h3>
+                </div>
+                <p className="text-white/40 text-sm mb-4">Отправь другу — когда он зарегистрируется, ты станешь его спонсором</p>
+                <div className="flex gap-2 mb-3">
+                  <input readOnly value={refUrl} className={inputCls + ' min-w-0 flex-1 text-sm'} onClick={e => (e.target as HTMLInputElement).select()} />
+                  <Button onClick={copyRef} className="bg-yellow-600 hover:bg-yellow-500 text-black font-semibold shrink-0 gap-1.5">
+                    <Icon name={copied ? 'Check' : 'Copy'} size={15} />
+                    {copied ? 'Скопировано' : 'Копировать'}
+                  </Button>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <a
+                    href={`https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${encodeURIComponent('Заходи в Плям про100 — зарабатывай приглашая друзей! Вход от 300 ₽')}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600/30 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+                  >
+                    <Icon name="Send" size={12} /> Поделиться в Telegram
+                  </a>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent('Заходи в Плям про100 — зарабатывай приглашая друзей! Вход от 300 ₽\n' + refUrl)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 bg-green-600/20 border border-green-500/30 text-green-300 hover:bg-green-600/30 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+                  >
+                    <Icon name="MessageCircle" size={12} /> WhatsApp
+                  </a>
+                  <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-white/40 text-xs px-3 py-1.5 rounded-full">
+                    Код: <span className="font-mono text-white/60">{user.referral_code}</span>
+                  </span>
+                </div>
               </div>
-              <p className="text-white/30 text-xs mt-2">Код: <span className="text-white/60 font-mono">{user.referral_code}</span></p>
             </div>
 
             <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
