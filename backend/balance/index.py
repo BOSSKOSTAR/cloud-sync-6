@@ -1,16 +1,30 @@
+import hashlib
 import json
 import os
 import psycopg2
+from urllib.parse import parse_qs
+
 
 def get_db():
     return psycopg2.connect(os.environ['DATABASE_URL'])
 
+
 def handler(event: dict, context) -> dict:
-    """Управление балансом: пополнение, вывод, история транзакций"""
+    """Управление балансом: пополнение, вывод, история транзакций. Также принимает webhook от ЮМани."""
     if event.get('httpMethod') == 'OPTIONS':
         return {'statusCode': 200, 'headers': {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, X-User-Id, X-Auth-Token, X-Session-Id', 'Access-Control-Max-Age': '86400'}, 'body': ''}
 
     headers = {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
+
+    content_type = ''
+    for k, v in (event.get('headers') or {}).items():
+        if k.lower() == 'content-type':
+            content_type = v.lower()
+            break
+
+    if 'application/x-www-form-urlencoded' in content_type:
+        return handle_yoomoney_webhook(event, headers)
+
     body = json.loads(event.get('body', '{}'))
     action = body.get('action')
 
@@ -99,3 +113,71 @@ def handler(event: dict, context) -> dict:
 
     cur.close(); conn.close()
     return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Неизвестное действие'})}
+
+
+def handle_yoomoney_webhook(event: dict, headers: dict) -> dict:
+    raw_body = event.get('body', '')
+    if event.get('isBase64Encoded'):
+        import base64
+        raw_body = base64.b64decode(raw_body).decode('utf-8')
+
+    params = {k: v[0] for k, v in parse_qs(raw_body).items() if v}
+
+    notification_type = params.get('notification_type', '')
+    operation_id = params.get('operation_id', '')
+    amount = params.get('amount', '0')
+    currency = params.get('currency', '643')
+    datetime_val = params.get('datetime', '')
+    sender = params.get('sender', '')
+    codepro = params.get('codepro', 'false')
+    label = params.get('label', '')
+    sha1_hash = params.get('sha1_hash', '')
+
+    secret = os.environ.get('YOOMONEY_SECRET', '')
+    check_str = '&'.join([notification_type, operation_id, amount, currency, datetime_val, sender, codepro, secret, label])
+    expected_hash = hashlib.sha1(check_str.encode('utf-8')).hexdigest()
+
+    if expected_hash != sha1_hash:
+        return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'invalid signature'})}
+
+    if codepro == 'true':
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'ok': True, 'skipped': 'codepro'})}
+
+    amount_float = float(amount)
+    if amount_float <= 0:
+        return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'invalid amount'})}
+
+    user_id = None
+    if label:
+        try:
+            user_id = int(label)
+        except ValueError:
+            pass
+
+    if not user_id:
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'ok': True, 'skipped': 'no label'})}
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+    if not cur.fetchone():
+        cur.close(); conn.close()
+        return {'statusCode': 404, 'headers': headers, 'body': json.dumps({'error': 'user not found'})}
+
+    try:
+        cur.execute(
+            "INSERT INTO transactions (user_id, type, amount, status, description, payment_id) VALUES (%s, 'topup', %s, 'completed', 'Пополнение через ЮМани', %s)",
+            (user_id, amount_float, operation_id)
+        )
+        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (amount_float, user_id))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        if 'unique' in str(e).lower():
+            cur.close(); conn.close()
+            return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'ok': True, 'skipped': 'duplicate'})}
+        raise
+
+    cur.close(); conn.close()
+    return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'ok': True, 'credited': amount_float})}

@@ -434,7 +434,7 @@ export default function Dashboard() {
                 </Button>
                 <div className="flex justify-center">
                   <iframe
-                    src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=1H7175FPPE1.260417&"
+                    src={`https://yoomoney.ru/quickpay/fundraise/button?billNumber=1H7175FPPE1.260417&label=${user?.user_id || ''}`}
                     width="330"
                     height="50"
                     frameBorder={0}
