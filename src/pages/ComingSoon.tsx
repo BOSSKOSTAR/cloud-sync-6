@@ -24,9 +24,15 @@ export default function ComingSoon() {
           Плям про<span className="text-yellow-400">100</span>
         </h1>
 
-        <p className="text-white/40 text-lg mb-10 leading-relaxed">
+        <p className="text-white/40 text-lg mb-8 leading-relaxed">
           Мы готовим кое-что интересное.<br />Совсем скоро откроем двери.
         </p>
+
+        <div className="inline-flex items-center gap-3 bg-yellow-600/10 border border-yellow-600/30 rounded-2xl px-6 py-4 mb-10">
+          <div className="text-yellow-400/60 text-sm">Дата открытия</div>
+          <div className="w-px h-4 bg-yellow-600/30" />
+          <div className="text-yellow-400 text-xl font-black">25 апреля 2026</div>
+        </div>
 
         <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-yellow-600/40 to-transparent mx-auto" />
       </div>
