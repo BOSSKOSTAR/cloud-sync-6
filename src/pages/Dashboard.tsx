@@ -422,16 +422,6 @@ export default function Dashboard() {
                 <h3 className="font-semibold mb-4 flex items-center gap-2 text-white">
                   <Icon name="Plus" size={16} className="text-green-400" /> Пополнить баланс
                 </h3>
-                <input
-                  type="number"
-                  placeholder="Сумма в рублях"
-                  value={topupAmount}
-                  onChange={e => setTopupAmount(e.target.value)}
-                  className={inputCls + ' mb-3'}
-                />
-                <Button className="w-full bg-green-800 hover:bg-green-700 text-white mb-3" onClick={handleTopup}>
-                  Пополнить через FreeKassa
-                </Button>
                 <div className="flex justify-center">
                   <iframe
                     src={`https://yoomoney.ru/quickpay/fundraise/button?billNumber=1H7175FPPE1.260417&label=${user?.user_id || ''}`}
