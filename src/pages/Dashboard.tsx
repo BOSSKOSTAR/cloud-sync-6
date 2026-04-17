@@ -429,9 +429,19 @@ export default function Dashboard() {
                   onChange={e => setTopupAmount(e.target.value)}
                   className={inputCls + ' mb-3'}
                 />
-                <Button className="w-full bg-green-800 hover:bg-green-700 text-white" onClick={handleTopup}>
+                <Button className="w-full bg-green-800 hover:bg-green-700 text-white mb-3" onClick={handleTopup}>
                   Пополнить через FreeKassa
                 </Button>
+                <div className="flex justify-center">
+                  <iframe
+                    src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=1H7175FPPE1.260417&"
+                    width="330"
+                    height="50"
+                    frameBorder={0}
+                    allowTransparency={true}
+                    scrolling="no"
+                  />
+                </div>
               </div>
 
               <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
