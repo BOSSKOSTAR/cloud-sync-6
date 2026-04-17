@@ -1,4 +1,6 @@
 {
+  "robokassa-robokassa-webhook": "https://functions.poehali.dev/7cca13d9-0d5b-4580-b82c-50de8d139b1d",
+  "robokassa-robokassa": "https://functions.poehali.dev/dd1f65e0-f97c-4deb-bc9b-09c4a1e02195",
   "auth": "https://functions.poehali.dev/bd4069a9-7af4-40c7-bc6a-e4ba31e8b9a4",
   "matrix": "https://functions.poehali.dev/3f712f05-2123-4016-9d6c-398ffb7112ac",
   "balance": "https://functions.poehali.dev/4466c646-9adb-42c9-adf7-314bc4a3165d"

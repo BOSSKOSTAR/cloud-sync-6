@@ -1,0 +1,52 @@
+{
+  "tests": [
+    {
+      "name": "Admin API - no auth",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Admin API - with auth",
+      "method": "GET",
+      "path": "/",
+      "headers": {"X-Admin-Token": "admin123"},
+      "expectedStatus": 200,
+      "expectedBody": {"status": "ok"},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get banners",
+      "method": "GET",
+      "path": "/banners",
+      "headers": {"X-Admin-Token": "admin123"},
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get news",
+      "method": "GET",
+      "path": "/news",
+      "headers": {"X-Admin-Token": "admin123"},
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get reviews",
+      "method": "GET",
+      "path": "/reviews",
+      "headers": {"X-Admin-Token": "admin123"},
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get users",
+      "method": "GET",
+      "path": "/users",
+      "headers": {"X-Admin-Token": "admin123"},
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
