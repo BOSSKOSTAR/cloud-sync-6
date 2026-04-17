@@ -19,6 +19,16 @@ export default function LandingFooter() {
                 onClick={() => navigate('/register')}>
                 Зарегистрироваться бесплатно
               </Button>
+              <div className="mt-6 flex justify-center">
+                <iframe
+                  src="https://yoomoney.ru/quickpay/fundraise/button?billNumber=1H7175FPPE1.260417&"
+                  width="330"
+                  height="50"
+                  frameBorder={0}
+                  allowTransparency={true}
+                  scrolling="no"
+                />
+              </div>
             </div>
           </div>
         </div>
