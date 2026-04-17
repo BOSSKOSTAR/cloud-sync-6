@@ -83,14 +83,16 @@ export default function Dashboard() {
     if (!user) return
     setLoading(true)
     try {
-      const [balRes, tariffsRes, matricesRes] = await Promise.all([
+      const [balRes, tariffsRes, matricesRes, refRes] = await Promise.all([
         api.getBalance(user.user_id),
         api.getTariffs(),
         api.getMyMatrices(user.user_id),
+        api.getReferrals(user.user_id),
       ])
       if (balRes.balance !== undefined) { setBalance(balRes.balance); setTotalEarned(balRes.total_earned) }
       if (tariffsRes.tariffs) setTariffs(tariffsRes.tariffs)
       if (matricesRes.matrices) setMatrices(matricesRes.matrices)
+      if (refRes.referrals) setReferrals(refRes.referrals)
     } finally {
       setLoading(false)
     }
@@ -228,9 +230,16 @@ export default function Dashboard() {
             <div className="rounded-2xl p-6 border border-yellow-600/40 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(120,80,0,0.45) 0%, rgba(5,25,10,0.7) 100%)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#ca8a0422_0%,_transparent_60%)]" />
               <div className="relative">
-                <div className="flex items-center gap-2 mb-1">
-                  <Icon name="Share2" size={18} className="text-yellow-400" />
-                  <h3 className="font-bold text-lg text-white">Твоя реферальная ссылка</h3>
+                <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Share2" size={18} className="text-yellow-400" />
+                    <h3 className="font-bold text-lg text-white">Твоя реферальная ссылка</h3>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-3 py-1">
+                    <Icon name="Users" size={13} className="text-yellow-400" />
+                    <span className="text-yellow-300 text-sm font-semibold">{referrals.length}</span>
+                    <span className="text-yellow-400/60 text-xs">{referrals.length === 1 ? 'человек' : referrals.length >= 2 && referrals.length <= 4 ? 'человека' : 'человек'} по ссылке</span>
+                  </div>
                 </div>
                 <p className="text-white/40 text-sm mb-4">Отправь другу — когда он зарегистрируется, ты станешь его спонсором</p>
                 <div className="flex gap-2 mb-3">
