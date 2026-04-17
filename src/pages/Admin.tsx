@@ -30,6 +30,7 @@ export default function Admin() {
   const [news, setNews] = useState<Record<string, unknown>[]>([]);
   const [reviews, setReviews] = useState<Record<string, unknown>[]>([]);
   const [users, setUsers] = useState<Record<string, unknown>[]>([]);
+  const [prestart, setPrestart] = useState(() => localStorage.getItem("site_prestart") === "1");
 
   const [dialog, setDialog] = useState<{ type: string; item?: Record<string, unknown> } | null>(null);
   const [form, setForm] = useState<Record<string, unknown>>({});
@@ -129,9 +130,26 @@ export default function Admin() {
     <div className="min-h-screen bg-background">
       <div className="border-b px-6 py-4 flex items-center justify-between">
         <h1 className="text-xl font-bold">Админ-панель</h1>
-        <Button variant="outline" size="sm" onClick={() => { localStorage.removeItem("admin_token"); setAuthed(false); }}>
-          <Icon name="LogOut" size={16} className="mr-2" /> Выйти
-        </Button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
+            <Icon name="Clock" size={15} className={prestart ? "text-yellow-500" : "text-muted-foreground"} />
+            <Label htmlFor="prestart-toggle" className="text-sm cursor-pointer select-none">
+              Режим «Скоро открытие»
+            </Label>
+            <Switch
+              id="prestart-toggle"
+              checked={prestart}
+              onCheckedChange={(v) => {
+                setPrestart(v);
+                localStorage.setItem("site_prestart", v ? "1" : "0");
+                toast.success(v ? "Заглушка включена — сайт закрыт для посетителей" : "Заглушка отключена — сайт открыт");
+              }}
+            />
+          </div>
+          <Button variant="outline" size="sm" onClick={() => { localStorage.removeItem("admin_token"); setAuthed(false); }}>
+            <Icon name="LogOut" size={16} className="mr-2" /> Выйти
+          </Button>
+        </div>
       </div>
 
       <div className="p-6">

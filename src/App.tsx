@@ -8,9 +8,12 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
+import ComingSoon from "./pages/ComingSoon";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const isPrestart = localStorage.getItem("site_prestart") === "1";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -20,12 +23,21 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Auth mode="login" />} />
-            <Route path="/register" element={<Auth mode="register" />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="*" element={<NotFound />} />
+            {isPrestart ? (
+              <>
+                <Route path="/admin" element={<Admin />} />
+                <Route path="*" element={<ComingSoon />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Auth mode="login" />} />
+                <Route path="/register" element={<Auth mode="register" />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="*" element={<NotFound />} />
+              </>
+            )}
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
