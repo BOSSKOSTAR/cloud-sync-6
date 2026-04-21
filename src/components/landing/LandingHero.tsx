@@ -112,7 +112,6 @@ export default function LandingHero({ heroVisible, membersCount }: LandingHeroPr
           {[
             { label: 'Тарифов', value: 3, suffix: '' },
             { label: 'Уровней матрицы', value: 5, suffix: '' },
-            { label: 'Выплачено', value: 4800000, suffix: ' ₽' },
             { label: 'Макс. заработок', value: 5880000, suffix: ' ₽' },
           ].map(s => (
             <div key={s.label} className="card-hover bg-white/3 rounded-xl p-4">
