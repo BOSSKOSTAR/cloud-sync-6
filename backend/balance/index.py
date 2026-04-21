@@ -102,8 +102,10 @@ def handler(event: dict, context) -> dict:
     elif action == 'get_stats':
         cur.execute("SELECT COUNT(*) FROM t_p38899835_cloud_sync_6.users")
         users_count = cur.fetchone()[0]
+        cur.execute("SELECT COALESCE(SUM(amount), 0) FROM t_p38899835_cloud_sync_6.transactions WHERE type = 'withdrawal' AND status = 'completed'")
+        total_paid = float(cur.fetchone()[0])
         cur.close(); conn.close()
-        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'users_count': users_count})}
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'users_count': users_count, 'total_paid': total_paid})}
 
     elif action == 'get_referrals':
         user_id = body.get('user_id')

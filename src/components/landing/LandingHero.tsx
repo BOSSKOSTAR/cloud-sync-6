@@ -7,9 +7,10 @@ import FloatingParticles from './FloatingParticles'
 interface LandingHeroProps {
   heroVisible: boolean
   membersCount: number
+  totalPaid: number
 }
 
-export default function LandingHero({ heroVisible, membersCount }: LandingHeroProps) {
+export default function LandingHero({ heroVisible, membersCount, totalPaid }: LandingHeroProps) {
   const navigate = useNavigate()
 
   return (
@@ -112,6 +113,7 @@ export default function LandingHero({ heroVisible, membersCount }: LandingHeroPr
           {[
             { label: 'Тарифов', value: 3, suffix: '' },
             { label: 'Уровней матрицы', value: 5, suffix: '' },
+            ...(totalPaid > 0 ? [{ label: 'Выплачено', value: totalPaid, suffix: ' ₽' }] : []),
             { label: 'Макс. заработок', value: 5880000, suffix: ' ₽' },
           ].map(s => (
             <div key={s.label} className="card-hover bg-white/3 rounded-xl p-4">

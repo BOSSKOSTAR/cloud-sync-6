@@ -4,9 +4,9 @@
       "name": "Get balance",
       "method": "POST",
       "path": "/",
-      "body": {"action": "get_balance", "user_id": 1},
+      "body": {"action": "get_balance", "user_id": 2},
       "expectedStatus": 200,
-      "expectedBody": {"balance": 0},
+      "expectedBody": {"balance": 130000},
       "bodyMatcher": "partial"
     }
   ,{
@@ -15,7 +15,7 @@
       "path": "/",
       "body": {"action": "get_stats"},
       "expectedStatus": 200,
-      "expectedBody": {"users_count": 3},
+      "expectedBody": {"users_count": 2, "total_paid": 0.0},
       "bodyMatcher": "partial"
     }
   ]

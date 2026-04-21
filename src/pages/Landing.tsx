@@ -55,6 +55,7 @@ export default function Landing() {
   const [activeTab, setActiveTab] = useState<'mini' | 'minor' | 'major'>('mini')
   const [heroVisible, setHeroVisible] = useState(false)
   const [membersCount, setMembersCount] = useState(0)
+  const [totalPaid, setTotalPaid] = useState(0)
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 100)
@@ -64,7 +65,10 @@ export default function Landing() {
       body: JSON.stringify({ action: 'get_stats' })
     })
       .then(r => r.json())
-      .then(data => setMembersCount(data.users_count ?? 0))
+      .then(data => {
+        setMembersCount(data.users_count ?? 0)
+        setTotalPaid(data.total_paid ?? 0)
+      })
       .catch(() => {})
   }, [])
 
@@ -115,7 +119,7 @@ export default function Landing() {
         }
       `}</style>
 
-      <LandingHero heroVisible={heroVisible} membersCount={membersCount} />
+      <LandingHero heroVisible={heroVisible} membersCount={membersCount} totalPaid={totalPaid} />
       <LandingHowItWorks tariffs={tariffs} />
       <LandingTariffs tariffs={tariffs} activeTab={activeTab} setActiveTab={setActiveTab} />
       <LandingFooter />
