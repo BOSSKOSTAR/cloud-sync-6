@@ -49,13 +49,23 @@ const tariffs = [
   },
 ]
 
+const BALANCE_URL = 'https://functions.poehali.dev/4466c646-9adb-42c9-adf7-314bc4a3165d'
+
 export default function Landing() {
   const [activeTab, setActiveTab] = useState<'mini' | 'minor' | 'major'>('mini')
   const [heroVisible, setHeroVisible] = useState(false)
-  const [membersCount] = useState(1247)
+  const [membersCount, setMembersCount] = useState(0)
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 100)
+    fetch(BALANCE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'get_stats' })
+    })
+      .then(r => r.json())
+      .then(data => setMembersCount(data.users_count ?? 0))
+      .catch(() => {})
   }, [])
 
   return (

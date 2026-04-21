@@ -9,5 +9,14 @@
       "expectedBody": {"balance": 0},
       "bodyMatcher": "partial"
     }
+  ,{
+      "name": "Get stats",
+      "method": "POST",
+      "path": "/",
+      "body": {"action": "get_stats"},
+      "expectedStatus": 200,
+      "expectedBody": {"users_count": 3},
+      "bodyMatcher": "partial"
+    }
   ]
 }

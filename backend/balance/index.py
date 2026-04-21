@@ -99,6 +99,12 @@ def handler(event: dict, context) -> dict:
         cur.close(); conn.close()
         return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'success': True})}
 
+    elif action == 'get_stats':
+        cur.execute("SELECT COUNT(*) FROM t_p38899835_cloud_sync_6.users")
+        users_count = cur.fetchone()[0]
+        cur.close(); conn.close()
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'users_count': users_count})}
+
     elif action == 'get_referrals':
         user_id = body.get('user_id')
         cur.execute("""
