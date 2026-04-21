@@ -22,10 +22,12 @@ export default function LandingHero({ heroVisible, membersCount }: LandingHeroPr
             <span className="font-bold text-lg">Плям про<span className="text-blue-400">100</span></span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 text-xs text-green-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
-              {membersCount.toLocaleString('ru')} участников
-            </div>
+            {membersCount >= 10 && (
+              <div className="hidden md:flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 text-xs text-green-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
+                {membersCount.toLocaleString('ru')} участников
+              </div>
+            )}
             <Button variant="ghost" className="text-white/80 hover:text-white" onClick={() => navigate('/login')}>
               Войти
             </Button>
@@ -87,20 +89,22 @@ export default function LandingHero({ heroVisible, membersCount }: LandingHeroPr
       </section>
 
       {/* Live counter */}
-      <section className="py-8 px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/20 rounded-2xl p-6 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
-              <span className="text-green-400 text-sm font-medium">Онлайн сейчас</span>
+      {membersCount >= 10 && (
+        <section className="py-8 px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/20 rounded-2xl p-6 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
+                <span className="text-green-400 text-sm font-medium">Онлайн сейчас</span>
+              </div>
+              <div className="text-4xl font-bold mb-1">
+                <AnimatedNumber value={membersCount} /> <span className="text-blue-400">участников</span>
+              </div>
+              <p className="text-white/40 text-sm">уже зарабатывают в системе Плям про100</p>
             </div>
-            <div className="text-4xl font-bold mb-1">
-              <AnimatedNumber value={membersCount} /> <span className="text-blue-400">участников</span>
-            </div>
-            <p className="text-white/40 text-sm">уже зарабатывают в системе Плям про100</p>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Stats */}
       <section className="py-12 px-4 border-y border-white/5">
