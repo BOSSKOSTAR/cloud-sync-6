@@ -30,6 +30,7 @@ export default function Admin() {
   const [news, setNews] = useState<Record<string, unknown>[]>([]);
   const [reviews, setReviews] = useState<Record<string, unknown>[]>([]);
   const [users, setUsers] = useState<Record<string, unknown>[]>([]);
+  const [matrices, setMatrices] = useState<Record<string, unknown>[]>([]);
   const [prestart, setPrestart] = useState(() => localStorage.getItem("site_prestart") === "1");
 
   const [dialog, setDialog] = useState<{ type: string; item?: Record<string, unknown> } | null>(null);
@@ -49,16 +50,18 @@ export default function Admin() {
   }
 
   async function loadAll() {
-    const [b, n, r, u] = await Promise.all([
+    const [b, n, r, u, m] = await Promise.all([
       api("/banners", "GET", token),
       api("/news", "GET", token),
       api("/reviews", "GET", token),
       api("/users", "GET", token),
+      api("/matrices", "GET", token),
     ]);
     if (Array.isArray(b)) setBanners(b);
     if (Array.isArray(n)) setNews(n);
     if (Array.isArray(r)) setReviews(r);
     if (Array.isArray(u)) setUsers(u);
+    if (Array.isArray(m)) setMatrices(m);
   }
 
   useEffect(() => {
@@ -159,6 +162,7 @@ export default function Admin() {
             <TabsTrigger value="news">Новости ({news.length})</TabsTrigger>
             <TabsTrigger value="reviews">Отзывы ({reviews.length})</TabsTrigger>
             <TabsTrigger value="users">Пользователи ({users.length})</TabsTrigger>
+            <TabsTrigger value="matrices">Матрицы ({matrices.length})</TabsTrigger>
           </TabsList>
 
           {/* BANNERS */}
@@ -262,6 +266,32 @@ export default function Admin() {
                 </Card>
               ))}
               {users.length === 0 && <p className="text-muted-foreground text-sm">Пользователей пока нет</p>}
+            </div>
+          </TabsContent>
+
+          {/* MATRICES */}
+          <TabsContent value="matrices">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Матрицы пользователей</h2>
+              <Button size="sm" variant="outline" onClick={loadAll}><Icon name="RefreshCw" size={16} className="mr-2" />Обновить</Button>
+            </div>
+            <div className="space-y-3">
+              {matrices.map((m) => (
+                <Card key={m.id}>
+                  <CardContent className="py-3 flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{m.user_name || "—"} <span className="text-muted-foreground text-sm">#{m.user_id}</span></p>
+                      <p className="text-sm text-muted-foreground">{m.user_email || "—"}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Тариф: {m.tariff_name} · Уровень {m.level_number} · Создана {new Date(m.created_at).toLocaleDateString("ru-RU")}</p>
+                    </div>
+                    <div className="text-right text-sm flex flex-col items-end gap-1">
+                      <Badge variant={m.status === "active" ? "default" : "secondary"}>{m.status === "active" ? "Активна" : m.status === "completed" ? "Завершена" : String(m.status)}</Badge>
+                      <p className="text-muted-foreground">Слотов: {m.slots_filled} / {m.total_slots}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {matrices.length === 0 && <p className="text-muted-foreground text-sm">Матриц пока нет</p>}
             </div>
           </TabsContent>
         </Tabs>

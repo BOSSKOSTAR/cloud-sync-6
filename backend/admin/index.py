@@ -56,6 +56,9 @@ def handler(event: dict, context) -> dict:
     if "/users" in path:
         return handle_users(method, path, event.get("queryStringParameters") or {})
 
+    if "/matrices" in path:
+        return handle_matrices(method, path, event.get("queryStringParameters") or {})
+
     return resp({"status": "ok", "message": "Admin API"})
 
 
@@ -183,6 +186,29 @@ def handle_users(method, path, params):
         """)
         rows = cur.fetchall()
         keys = ["id", "name", "email", "balance", "total_earned", "created_at", "tx_count", "last_activity"]
+        return resp([dict(zip(keys, r)) for r in rows])
+
+    return err("Неверный запрос")
+
+
+def handle_matrices(method, path, params):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    if method == "GET":
+        cur.execute("""
+            SELECT um.id, um.user_id, u.name, u.email, t.name as tariff_name,
+                   um.level_number, um.status, um.slots_filled, um.created_at, um.completed_at,
+                   COUNT(ms.id) as total_slots
+            FROM t_p38899835_cloud_sync_6.user_matrices um
+            LEFT JOIN t_p38899835_cloud_sync_6.users u ON u.id = um.user_id
+            LEFT JOIN t_p38899835_cloud_sync_6.tariffs t ON t.id = um.tariff_id
+            LEFT JOIN t_p38899835_cloud_sync_6.matrix_slots ms ON ms.matrix_id = um.id
+            GROUP BY um.id, um.user_id, u.name, u.email, t.name, um.level_number, um.status, um.slots_filled, um.created_at, um.completed_at
+            ORDER BY um.created_at DESC
+        """)
+        rows = cur.fetchall()
+        keys = ["id", "user_id", "user_name", "user_email", "tariff_name", "level_number", "status", "slots_filled", "created_at", "completed_at", "total_slots"]
         return resp([dict(zip(keys, r)) for r in rows])
 
     return err("Неверный запрос")
