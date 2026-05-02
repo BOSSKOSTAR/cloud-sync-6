@@ -1,0 +1,1 @@
+UPDATE t_p38899835_cloud_sync_6.users SET referred_by = 2 WHERE id = 6;
