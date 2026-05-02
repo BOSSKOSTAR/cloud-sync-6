@@ -89,7 +89,16 @@ export default function Dashboard() {
       if (balRes.balance !== undefined) { setBalance(balRes.balance); setTotalEarned(balRes.total_earned) }
       if (tariffsRes.tariffs) setTariffs(tariffsRes.tariffs)
       if (matricesRes.matrices) setMatrices(matricesRes.matrices)
-      if (refRes.referrals) setReferrals(refRes.referrals)
+      if (refRes.referrals) {
+        setReferrals(refRes.referrals)
+        const newCount = refRes.referrals.length
+        const prevCount = parseInt(localStorage.getItem(`ref_count_${user.user_id}`) || '0', 10)
+        if (newCount > prevCount && prevCount >= 0) {
+          const diff = newCount - prevCount
+          toast.success(`🎉 У тебя ${diff === 1 ? 'новый реферал' : `${diff} новых реферала`}!`, { duration: 5000 })
+        }
+        localStorage.setItem(`ref_count_${user.user_id}`, String(newCount))
+      }
     } finally {
       setLoading(false)
     }
