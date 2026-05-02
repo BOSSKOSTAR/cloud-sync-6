@@ -33,7 +33,7 @@ def handler(event: dict, context) -> dict:
 
     if action == 'get_balance':
         user_id = body.get('user_id')
-        cur.execute("SELECT balance, total_earned FROM users WHERE id = %s", (user_id,))
+        cur.execute("SELECT balance, total_earned FROM t_p38899835_cloud_sync_6.users WHERE id = %s", (user_id,))
         row = cur.fetchone()
         cur.close(); conn.close()
         if not row:
@@ -50,20 +50,20 @@ def handler(event: dict, context) -> dict:
             cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Укажите сумму и номер телефона СБП'})}
 
-        cur.execute("SELECT balance FROM users WHERE id = %s", (user_id,))
+        cur.execute("SELECT balance FROM t_p38899835_cloud_sync_6.users WHERE id = %s", (user_id,))
         row = cur.fetchone()
         if not row or float(row[0]) < amount:
             cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Недостаточно средств'})}
 
-        cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (amount, user_id))
+        cur.execute("UPDATE t_p38899835_cloud_sync_6.users SET balance = balance - %s WHERE id = %s", (amount, user_id))
         cur.execute(
-            "INSERT INTO withdrawal_requests (user_id, amount, sbp_phone, sbp_bank, status) VALUES (%s, %s, %s, %s, 'pending') RETURNING id",
+            "INSERT INTO t_p38899835_cloud_sync_6.withdrawal_requests (user_id, amount, sbp_phone, sbp_bank, status) VALUES (%s, %s, %s, %s, 'pending') RETURNING id",
             (user_id, amount, sbp_phone, sbp_bank)
         )
         req_id = cur.fetchone()[0]
         cur.execute(
-            "INSERT INTO transactions (user_id, type, amount, status, description) VALUES (%s, 'withdrawal', %s, 'pending', %s)",
+            "INSERT INTO t_p38899835_cloud_sync_6.transactions (user_id, type, amount, status, description) VALUES (%s, 'withdrawal', %s, 'pending', %s)",
             (user_id, amount, f'Заявка на вывод #{req_id}')
         )
         conn.commit()
@@ -74,7 +74,7 @@ def handler(event: dict, context) -> dict:
         user_id = body.get('user_id')
         cur.execute("""
             SELECT id, type, amount, status, description, created_at
-            FROM transactions WHERE user_id = %s ORDER BY created_at DESC LIMIT 50
+            FROM t_p38899835_cloud_sync_6.transactions WHERE user_id = %s ORDER BY created_at DESC LIMIT 50
         """, (user_id,))
         rows = cur.fetchall()
         txs = [{'id': r[0], 'type': r[1], 'amount': float(r[2]), 'status': r[3], 'description': r[4], 'created_at': str(r[5])} for r in rows]
@@ -90,9 +90,9 @@ def handler(event: dict, context) -> dict:
             cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Неверная сумма'})}
 
-        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (amount, user_id))
+        cur.execute("UPDATE t_p38899835_cloud_sync_6.users SET balance = balance + %s WHERE id = %s", (amount, user_id))
         cur.execute(
-            "INSERT INTO transactions (user_id, type, amount, status, description, payment_id) VALUES (%s, 'topup', %s, 'completed', 'Пополнение баланса', %s)",
+            "INSERT INTO t_p38899835_cloud_sync_6.transactions (user_id, type, amount, status, description, payment_id) VALUES (%s, 'topup', %s, 'completed', 'Пополнение баланса', %s)",
             (user_id, amount, payment_id)
         )
         conn.commit()
@@ -111,8 +111,8 @@ def handler(event: dict, context) -> dict:
         user_id = body.get('user_id')
         cur.execute("""
             SELECT u.name, u.created_at,
-                   (SELECT COUNT(*) FROM user_matrices um WHERE um.user_id = u.id) as matrix_count
-            FROM users u WHERE u.referred_by = %s ORDER BY u.created_at DESC
+                   (SELECT COUNT(*) FROM t_p38899835_cloud_sync_6.user_matrices um WHERE um.user_id = u.id) as matrix_count
+            FROM t_p38899835_cloud_sync_6.users u WHERE u.referred_by = %s ORDER BY u.created_at DESC
         """, (user_id,))
         rows = cur.fetchall()
         referrals = [{'name': r[0], 'joined': str(r[1]), 'matrices': r[2]} for r in rows]
@@ -168,17 +168,17 @@ def handle_yoomoney_webhook(event: dict, headers: dict) -> dict:
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+    cur.execute("SELECT id FROM t_p38899835_cloud_sync_6.users WHERE id = %s", (user_id,))
     if not cur.fetchone():
         cur.close(); conn.close()
         return {'statusCode': 404, 'headers': headers, 'body': json.dumps({'error': 'user not found'})}
 
     try:
         cur.execute(
-            "INSERT INTO transactions (user_id, type, amount, status, description, payment_id) VALUES (%s, 'topup', %s, 'completed', 'Пополнение через ЮМани', %s)",
+            "INSERT INTO t_p38899835_cloud_sync_6.transactions (user_id, type, amount, status, description, payment_id) VALUES (%s, 'topup', %s, 'completed', 'Пополнение через ЮМани', %s)",
             (user_id, amount_float, operation_id)
         )
-        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (amount_float, user_id))
+        cur.execute("UPDATE t_p38899835_cloud_sync_6.users SET balance = balance + %s WHERE id = %s", (amount_float, user_id))
         conn.commit()
     except Exception as e:
         conn.rollback()
