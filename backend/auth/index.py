@@ -5,6 +5,8 @@ import random
 import string
 import psycopg2
 
+S = 't_p38899835_cloud_sync_6'
+
 def get_db():
     return psycopg2.connect(os.environ['DATABASE_URL'])
 
@@ -35,7 +37,7 @@ def handler(event: dict, context) -> dict:
         if not name or not password or not email:
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Имя, email и пароль обязательны'})}
 
-        cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+        cur.execute(f"SELECT id FROM {S}.users WHERE email = %s", (email,))
         if cur.fetchone():
             cur.close()
             conn.close()
@@ -43,14 +45,14 @@ def handler(event: dict, context) -> dict:
 
         referrer_id = None
         if ref_code:
-            cur.execute("SELECT id FROM users WHERE referral_code = %s", (ref_code,))
+            cur.execute(f"SELECT id FROM {S}.users WHERE referral_code = %s", (ref_code,))
             row = cur.fetchone()
             if row:
                 referrer_id = row[0]
 
         my_code = generate_referral_code()
         cur.execute(
-            "INSERT INTO users (name, password_hash, referral_code, referred_by, email) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+            f"INSERT INTO {S}.users (name, password_hash, referral_code, referred_by, email) VALUES (%s, %s, %s, %s, %s) RETURNING id",
             (name, hash_password(password), my_code, referrer_id, email)
         )
         user_id = cur.fetchone()[0]
@@ -63,7 +65,7 @@ def handler(event: dict, context) -> dict:
         name = body.get('name', '').strip()
         password = body.get('password', '').strip()
 
-        cur.execute("SELECT id, name, referral_code, balance, total_earned FROM users WHERE name = %s AND password_hash = %s", (name, hash_password(password)))
+        cur.execute(f"SELECT id, name, referral_code, balance, total_earned FROM {S}.users WHERE name = %s AND password_hash = %s", (name, hash_password(password)))
         row = cur.fetchone()
         cur.close()
         conn.close()
@@ -78,7 +80,7 @@ def handler(event: dict, context) -> dict:
 
     elif action == 'get_user':
         user_id = body.get('user_id')
-        cur.execute("SELECT id, name, referral_code, balance, total_earned, created_at FROM users WHERE id = %s", (user_id,))
+        cur.execute(f"SELECT id, name, referral_code, balance, total_earned, created_at FROM {S}.users WHERE id = %s", (user_id,))
         row = cur.fetchone()
         cur.close()
         conn.close()
