@@ -65,9 +65,11 @@ export default function Promo() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050a18] text-white">
+    <div className="min-h-screen text-white relative" style={{ background: '#050a18' }}>
+      <div className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0" style={{ backgroundImage: 'url(https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/bucket/351e4084-810c-475e-8417-0b089c0788ab.jpg)' }} />
+      <div className="fixed inset-0 bg-[#050a18]/80 z-0" />
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#050a18]/90 backdrop-blur border-b border-white/10">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#050a18]/90 backdrop-blur border-b border-white/10 relative">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 text-white/60 hover:text-white transition-colors">
             <Icon name="ArrowLeft" size={18} />
@@ -83,7 +85,7 @@ export default function Promo() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 pt-28 pb-20">
+      <main className="max-w-5xl mx-auto px-4 pt-28 pb-20 relative z-10">
         {/* Заголовок */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full px-4 py-1.5 text-sm text-yellow-300 mb-4">
