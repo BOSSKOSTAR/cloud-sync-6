@@ -120,6 +120,33 @@ export default function Landing() {
       `}</style>
 
       <LandingHero heroVisible={heroVisible} membersCount={membersCount} totalPaid={totalPaid} />
+
+      {/* Рекламный баннер */}
+      <section className="max-w-6xl mx-auto px-4 py-10">
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-yellow-500/10 border border-white/10 group">
+          <img
+            src="https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/files/07c12679-a01d-4303-8090-d3ec6d750f91.jpg"
+            alt="Плям про100 — зарабатывай приглашая друзей"
+            className="w-full object-cover max-h-[420px] transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-transparent to-[#050a18]/40 flex items-center px-10">
+            <div className="max-w-sm">
+              <div className="text-xs font-semibold text-green-400 uppercase tracking-widest mb-2">Начни прямо сейчас</div>
+              <h2 className="text-3xl font-bold text-white leading-tight mb-3">
+                Зарабатывай<br />приглашая друзей
+              </h2>
+              <p className="text-white/60 text-sm mb-5">От 300 ₽ до 5 880 000 ₽ — выбери свой уровень дохода</p>
+              <button
+                onClick={() => document.getElementById('tariffs')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                Выбрать тариф
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <LandingHowItWorks tariffs={tariffs} />
       <LandingTariffs tariffs={tariffs} activeTab={activeTab} setActiveTab={setActiveTab} />
       <LandingFooter />
