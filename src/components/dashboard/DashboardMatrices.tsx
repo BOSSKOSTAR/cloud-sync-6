@@ -37,109 +37,167 @@ interface Props {
   onSwitchToOverview: () => void
 }
 
-// Структура пирамиды: [уровень матрицы] -> [строки пирамиды со слотами]
-// Всего слотов: 2+2+4+4+4 = 16 на 5 уровней матрицы
-// Пирамида внутри уровня: строки по 1, 2, 4... вниз
-const PYRAMID_ROWS: Record<number, number[]> = {
-  1: [1, 1],         // уровень 1: 2 слота — строка по 1+1
-  2: [1, 1],         // уровень 2: 2 слота
-  3: [2, 2],         // уровень 3: 4 слота
-  4: [2, 2],         // уровень 4: 4 слота
-  5: [2, 2],         // уровень 5: 4 слота
-}
+// Пирамида: 1 (вы) → 2 → 4 слота
+// Позиции слотов: 1..6 (нумерация с 1)
 
-// Глобальный offset слотов для каждого уровня матрицы
-const LEVEL_OFFSET = [0, 2, 4, 8, 12]
+function SlotNode({
+  slot,
+  colorClass,
+  size = 'md',
+  label,
+}: {
+  slot: Slot | null
+  colorClass: string
+  size?: 'lg' | 'md' | 'sm'
+  label?: string
+}) {
+  const dim = size === 'lg' ? 'w-14 h-14' : size === 'md' ? 'w-11 h-11' : 'w-9 h-9'
+  const iconSize = size === 'lg' ? 18 : size === 'md' ? 15 : 13
+  const textSize = size === 'lg' ? 'text-[11px]' : 'text-[9px]'
 
-function PyramidSlot({ slot, colors }: { slot: Slot | null; colors: { dot: string } }) {
-  if (!slot) {
+  if (!slot && !label) {
     return (
       <div className="flex flex-col items-center gap-1">
-        <div className="w-9 h-9 rounded-full border-2 border-dashed border-white/15 bg-white/3 flex items-center justify-center">
-          <Icon name="UserPlus" size={14} className="text-white/20" />
+        <div className={`${dim} rounded-full border-2 border-dashed border-white/20 bg-white/5 flex items-center justify-center`}>
+          <Icon name="UserPlus" size={iconSize} className="text-white/20" />
         </div>
-        <span className="text-[9px] text-white/20 text-center max-w-[60px] leading-tight">свободно</span>
+        <span className={`${textSize} text-white/20`}>свободно</span>
       </div>
     )
   }
+
+  if (label) {
+    return (
+      <div className="flex flex-col items-center gap-1">
+        <div className={`${dim} rounded-full flex items-center justify-center ${colorClass} shadow-lg`}>
+          <Icon name="User" size={iconSize} className="text-white" />
+        </div>
+        <span className={`${textSize} text-white/80 font-semibold`}>{label}</span>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className={`w-9 h-9 rounded-full border-2 border-current flex items-center justify-center ${colors.dot} bg-opacity-20`}
-        style={{ background: 'rgba(255,255,255,0.07)' }}>
-        <Icon name="User" size={14} className="text-white/80" />
+      <div className={`${dim} rounded-full border-2 flex items-center justify-center bg-white/10`} style={{ borderColor: 'currentColor' }}>
+        <Icon name="User" size={iconSize} className={`${colorClass.replace('bg-', 'text-').replace('-500', '-400')}`} />
       </div>
-      <span className="text-[9px] text-white/60 text-center max-w-[60px] leading-tight truncate">
-        {slot.name.split(' ')[0]}
+      <span className={`${textSize} text-white/60 max-w-[64px] text-center truncate`}>
+        {slot!.name.split(' ')[0]}
       </span>
     </div>
   )
 }
 
-function MatrixPyramid({ detail, matrix, colors }: { detail: MatrixDetail; matrix: Matrix; colors: { dot: string; bar: string; badge: string } }) {
-  const levelMultiplier = [1, 2, 4, 8, 16]
+// Вертикальная линия-коннектор
+function VLine() {
+  return <div className="w-px h-4 bg-white/15 mx-auto" />
+}
+
+// Горизонтальный разветвитель
+function HBranch({ count }: { count: number }) {
+  if (count === 2) {
+    return (
+      <div className="flex items-start justify-center">
+        <div className="flex flex-col items-end w-1/2">
+          <div className="w-px h-3 bg-white/15 mx-auto" />
+          <div className="w-1/2 h-px bg-white/15 self-end" />
+        </div>
+        <div className="flex flex-col items-start w-1/2">
+          <div className="w-px h-3 bg-white/15 mx-auto" />
+          <div className="w-1/2 h-px bg-white/15 self-start" />
+        </div>
+      </div>
+    )
+  }
+  return null
+}
+
+function MatrixTree({
+  detail,
+  matrix,
+  colors,
+  userName,
+}: {
+  detail: MatrixDetail
+  matrix: Matrix
+  colors: { bar: string; dot: string }
+  userName: string
+}) {
   const levelSlots = [2, 2, 4, 4, 4]
+  const levelMultiplier = [1, 2, 4, 8, 16]
   const isLastLevel = matrix.level === 5
   const levelPayout = matrix.entry_price * levelMultiplier[matrix.level - 1]
-  const nextTariff = matrix.tariff_slug === 'mini' ? { name: 'Минор', price: 6000 } : matrix.tariff_slug === 'minor' ? { name: 'Мажор', price: 120000 } : null
-  const netPayout = isLastLevel && nextTariff ? levelPayout * levelSlots[matrix.level - 1] - nextTariff.price : levelPayout * levelSlots[matrix.level - 1]
-
-  // Слоты текущего уровня
-  const offset = LEVEL_OFFSET[matrix.level - 1]
-  const rows = PYRAMID_ROWS[matrix.level] ?? [2, 2]
-  const slotsForLevel: (Slot | null)[] = []
-  let pos = offset + 1
-  const totalInLevel = rows.reduce((a, b) => a + b, 0)
-  for (let i = 0; i < totalInLevel; i++) {
-    const found = detail.slots.find(s => s.position === pos) ?? null
-    slotsForLevel.push(found)
-    pos++
-  }
-
-  // Разбиваем на строки пирамиды
-  const pyramidRows: (Slot | null)[][] = []
-  let idx = 0
-  for (const count of rows) {
-    pyramidRows.push(slotsForLevel.slice(idx, idx + count))
-    idx += count
-  }
+  const nextTariff =
+    matrix.tariff_slug === 'mini'
+      ? { name: 'Минор', price: 6000 }
+      : matrix.tariff_slug === 'minor'
+      ? { name: 'Мажор', price: 120000 }
+      : null
+  const currentLevelSlotCount = levelSlots[matrix.level - 1]
+  const netPayout =
+    isLastLevel && nextTariff
+      ? levelPayout * currentLevelSlotCount - nextTariff.price
+      : levelPayout * currentLevelSlotCount
 
   const totalSlotsBefore = levelSlots.slice(0, matrix.level - 1).reduce((a, b) => a + b, 0)
   const filledInLevel = Math.max(0, matrix.slots_filled - totalSlotsBefore)
-  const slotsLeft = totalInLevel - filledInLevel
+  const slotsLeft = currentLevelSlotCount - filledInLevel
+
+  // Получаем слоты текущего уровня (позиции от totalSlotsBefore+1)
+  const getSlot = (localPos: number): Slot | null =>
+    detail.slots.find(s => s.position === totalSlotsBefore + localPos) ?? null
+
+  // Рядов: 1 (вы) → 2 → 4
+  const row2 = [getSlot(1), getSlot(2)]
+  const row3 = currentLevelSlotCount >= 4
+    ? [getSlot(3), getSlot(4), getSlot(5) ?? null, getSlot(6) ?? null]
+    : null
+
+  const dotText = colors.dot // e.g. 'text-blue-400'
 
   return (
-    <div className="space-y-4">
-      {/* Сам пользователь — вершина */}
-      <div className="flex flex-col items-center gap-1">
-        <div className={`w-11 h-11 rounded-full border-2 flex items-center justify-center ${colors.bar} border-transparent shadow-lg`}>
-          <Icon name="User" size={16} className="text-white" />
-        </div>
-        <span className="text-[10px] text-white/70 font-medium">Вы</span>
-      </div>
-
-      {/* Стрелка вниз */}
+    <div>
+      {/* Вершина — ВЫ */}
       <div className="flex justify-center">
-        <Icon name="ChevronDown" size={16} className="text-white/20" />
+        <SlotNode slot={null} colorClass={colors.bar} size="lg" label={userName.split(' ')[0]} />
       </div>
 
-      {/* Строки пирамиды */}
-      <div className="space-y-3">
-        {pyramidRows.map((row, ri) => (
-          <div key={ri} className="flex justify-center gap-4">
-            {row.map((slot, si) => (
-              <PyramidSlot key={si} slot={slot} colors={colors} />
-            ))}
-          </div>
+      <VLine />
+
+      {/* Ряд 2 слота */}
+      <div className="relative flex justify-center gap-10">
+        {/* Горизонтальная линия между ними */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-16 h-px bg-white/15" />
+        {row2.map((slot, i) => (
+          <SlotNode key={i} slot={slot} colorClass={dotText} size="md" />
         ))}
       </div>
 
-      {/* Статистика */}
-      <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+      {row3 && (
+        <>
+          {/* Вертикальные линии вниз от 2-го ряда */}
+          <div className="flex justify-center gap-10">
+            <VLine />
+            <VLine />
+          </div>
+
+          {/* Ряд 4 слота */}
+          <div className="relative flex justify-center gap-4">
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 w-36 h-px bg-white/15" />
+            {row3.map((slot, i) => (
+              <SlotNode key={i} slot={slot} colorClass={dotText} size="sm" />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Нижняя статистика */}
+      <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-3">
         <div className="text-xs text-white/30">
           {slotsLeft > 0
             ? `Ещё ${slotsLeft} ${slotsLeft === 1 ? 'слот' : slotsLeft < 5 ? 'слота' : 'слотов'} до ${isLastLevel ? 'выплаты' : `матрицы ${matrix.level + 1}`}`
-            : isLastLevel ? 'Финальная выплата!' : 'Переход на следующую матрицу!'
-          }
+            : isLastLevel ? 'Финальная выплата!' : 'Переход на следующую матрицу!'}
         </div>
         <div className="text-right">
           <div className="text-[10px] text-white/30">выплата</div>
@@ -156,6 +214,10 @@ function MatrixPyramid({ detail, matrix, colors }: { detail: MatrixDetail; matri
 export default function DashboardMatrices({ matrices, onSwitchToOverview }: Props) {
   const [details, setDetails] = useState<Record<number, MatrixDetail>>({})
   const [loading, setLoading] = useState<Record<number, boolean>>({})
+
+  const userName = (() => {
+    try { return JSON.parse(localStorage.getItem('plyam_user') || '{}').name || 'Вы' } catch { return 'Вы' }
+  })()
 
   useEffect(() => {
     matrices.forEach(m => {
@@ -182,10 +244,10 @@ export default function DashboardMatrices({ matrices, onSwitchToOverview }: Prop
   return (
     <div className="space-y-4">
       {matrices.map(m => {
-        const tariffColors: Record<string, { bar: string; badge: string; dot: string }> = {
-          mini:  { bar: 'bg-blue-500',   badge: 'bg-blue-900/50 text-blue-400',    dot: 'text-blue-400' },
-          minor: { bar: 'bg-purple-500', badge: 'bg-purple-900/50 text-purple-400', dot: 'text-purple-400' },
-          major: { bar: 'bg-yellow-500', badge: 'bg-yellow-900/50 text-yellow-400', dot: 'text-yellow-400' },
+        const tariffColors: Record<string, { bar: string; dot: string; badge: string }> = {
+          mini:  { bar: 'bg-blue-500',   dot: 'text-blue-400',   badge: 'bg-blue-900/50 text-blue-400' },
+          minor: { bar: 'bg-purple-500', dot: 'text-purple-400', badge: 'bg-purple-900/50 text-purple-400' },
+          major: { bar: 'bg-yellow-500', dot: 'text-yellow-400', badge: 'bg-yellow-900/50 text-yellow-400' },
         }
         const colors = tariffColors[m.tariff_slug] ?? tariffColors.mini
 
@@ -221,18 +283,18 @@ export default function DashboardMatrices({ matrices, onSwitchToOverview }: Prop
               ))}
             </div>
 
-            {/* Пирамида */}
-            {loading[m.id] && (
-              <div className="flex justify-center py-6">
-                <Icon name="Loader2" size={24} className="text-white/30 animate-spin" />
-              </div>
-            )}
-            {details[m.id] && (
-              <div className="bg-white/5 rounded-xl px-4 py-4">
-                <div className="text-xs text-white/40 mb-4 text-center">Матрица {m.level} — текущий уровень</div>
-                <MatrixPyramid detail={details[m.id]} matrix={m} colors={colors} />
-              </div>
-            )}
+            {/* Дерево матрицы */}
+            <div className="bg-white/5 rounded-xl px-4 py-5">
+              <div className="text-xs text-white/30 text-center mb-4">Матрица {m.level} — текущий уровень</div>
+              {loading[m.id] && (
+                <div className="flex justify-center py-4">
+                  <Icon name="Loader2" size={22} className="text-white/30 animate-spin" />
+                </div>
+              )}
+              {details[m.id] && (
+                <MatrixTree detail={details[m.id]} matrix={m} colors={colors} userName={userName} />
+              )}
+            </div>
           </div>
         )
       })}
