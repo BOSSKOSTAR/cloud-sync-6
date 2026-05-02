@@ -53,8 +53,9 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
 
       {/* Hero */}
       <section className="pt-32 pb-24 px-4 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/bucket/351e4084-810c-475e-8417-0b089c0788ab.jpg)' }} />
+        <div className="absolute inset-0 bg-[#050a18]/75" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1a2a6c44_0%,_transparent_65%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,_#7c3aed22_0%,_transparent_50%)]" />
         <FloatingParticles />
 
         <div className="relative max-w-3xl mx-auto">
