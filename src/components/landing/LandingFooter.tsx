@@ -1,8 +1,21 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import Icon from '@/components/ui/icon'
 
 export default function LandingFooter() {
   const navigate = useNavigate()
+  const [copied, setCopied] = useState(false)
+  const siteUrl = window.location.origin
+  const shareText = 'Заходи в Плям про100 — зарабатывай приглашая друзей! Вход от 300 ₽'
+
+  function handleCopy() {
+    navigator.clipboard.writeText(siteUrl).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   return (
     <>
       {/* CTA */}
@@ -35,8 +48,34 @@ export default function LandingFooter() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-white/10 text-center text-white/30 text-sm">
-        © 2026 Плям про100 · Матричная система заработка
+      <footer className="py-8 px-4 border-t border-white/10">
+        <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="text-white/30 text-xs">Поделиться сайтом:</span>
+            <a
+              href={`https://t.me/share/url?url=${encodeURIComponent(siteUrl)}&text=${encodeURIComponent(shareText)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600/30 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+            >
+              <Icon name="Send" size={12} /> Telegram
+            </a>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + siteUrl)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-green-600/20 border border-green-500/30 text-green-300 hover:bg-green-600/30 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+            >
+              <Icon name="MessageCircle" size={12} /> WhatsApp
+            </a>
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 bg-white/5 border border-white/15 text-white/50 hover:text-white/80 hover:bg-white/10 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+            >
+              <Icon name={copied ? 'Check' : 'Link'} size={12} />
+              {copied ? 'Скопировано!' : 'Копировать ссылку'}
+            </button>
+          </div>
+          <div className="text-white/30 text-sm">© 2026 Плям про100 · Матричная система заработка</div>
+        </div>
       </footer>
     </>
   )
