@@ -45,11 +45,13 @@ function SlotNode({
   colorClass,
   size = 'md',
   label,
+  payout,
 }: {
   slot: Slot | null
   colorClass: string
   size?: 'lg' | 'md' | 'sm'
   label?: string
+  payout?: number
 }) {
   const dim = size === 'lg' ? 'w-14 h-14' : size === 'md' ? 'w-11 h-11' : 'w-9 h-9'
   const iconSize = size === 'lg' ? 18 : size === 'md' ? 15 : 13
@@ -62,6 +64,7 @@ function SlotNode({
           <Icon name="UserPlus" size={iconSize} className="text-white/20" />
         </div>
         <span className={`${textSize} text-white/20`}>свободно</span>
+        {payout && <span className="text-[8px] text-green-400/40">{payout.toLocaleString('ru')} ₽</span>}
       </div>
     )
   }
@@ -85,6 +88,7 @@ function SlotNode({
       <span className={`${textSize} text-white/60 max-w-[64px] text-center truncate`}>
         {slot!.name.split(' ')[0]}
       </span>
+      {payout && <span className="text-[8px] text-green-400 font-semibold">{payout.toLocaleString('ru')} ₽</span>}
     </div>
   )
 }
@@ -144,6 +148,10 @@ function MatrixTree({
   const filledInLevel = Math.max(0, matrix.slots_filled - totalSlotsBefore)
   const slotsLeft = currentLevelSlotCount - filledInLevel
 
+  // Выплата за слот текущего уровня из данных levels
+  const currentLevelData = detail.levels?.find(l => l.level === matrix.level)
+  const payoutPerSlot = currentLevelData ? currentLevelData.payout : levelPayout
+
   // Получаем слоты текущего уровня (позиции от totalSlotsBefore+1)
   const getSlot = (localPos: number): Slot | null =>
     detail.slots.find(s => s.position === totalSlotsBefore + localPos) ?? null
@@ -154,7 +162,7 @@ function MatrixTree({
     ? [getSlot(3), getSlot(4), getSlot(5) ?? null, getSlot(6) ?? null]
     : null
 
-  const dotText = colors.dot // e.g. 'text-blue-400'
+  const dotText = colors.dot
 
   return (
     <div>
@@ -167,10 +175,9 @@ function MatrixTree({
 
       {/* Ряд 2 слота */}
       <div className="relative flex justify-center gap-10">
-        {/* Горизонтальная линия между ними */}
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-16 h-px bg-white/15" />
         {row2.map((slot, i) => (
-          <SlotNode key={i} slot={slot} colorClass={dotText} size="md" />
+          <SlotNode key={i} slot={slot} colorClass={dotText} size="md" payout={payoutPerSlot} />
         ))}
       </div>
 
@@ -186,7 +193,7 @@ function MatrixTree({
           <div className="relative flex justify-center gap-4">
             <div className="absolute top-5 left-1/2 -translate-x-1/2 w-36 h-px bg-white/15" />
             {row3.map((slot, i) => (
-              <SlotNode key={i} slot={slot} colorClass={dotText} size="sm" />
+              <SlotNode key={i} slot={slot} colorClass={dotText} size="sm" payout={payoutPerSlot} />
             ))}
           </div>
         </>
