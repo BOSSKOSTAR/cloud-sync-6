@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import Icon from '@/components/ui/icon'
@@ -12,6 +13,17 @@ interface LandingHeroProps {
 
 export default function LandingHero({ heroVisible, membersCount, totalPaid }: LandingHeroProps) {
   const navigate = useNavigate()
+  const [copied, setCopied] = useState(false)
+
+  const siteUrl = window.location.origin
+  const shareText = 'Заходи в Плям про100 — зарабатывай приглашая друзей! Вход от 300 ₽'
+
+  function handleCopy() {
+    navigator.clipboard.writeText(siteUrl).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
   return (
     <>
@@ -80,6 +92,33 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
               onClick={() => document.getElementById('tariffs')?.scrollIntoView({ behavior: 'smooth' })}>
               Подробнее
             </Button>
+          </div>
+
+          {/* Поделиться */}
+          <div className={`flex flex-wrap items-center justify-center gap-2 mt-6 transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: '500ms' }}>
+            <span className="text-white/30 text-xs">Поделиться:</span>
+            <a
+              href={`https://t.me/share/url?url=${encodeURIComponent(siteUrl)}&text=${encodeURIComponent(shareText)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 hover:bg-blue-600/30 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+            >
+              <Icon name="Send" size={12} /> Telegram
+            </a>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + siteUrl)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-green-600/20 border border-green-500/30 text-green-300 hover:bg-green-600/30 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+            >
+              <Icon name="MessageCircle" size={12} /> WhatsApp
+            </a>
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 bg-white/5 border border-white/15 text-white/50 hover:text-white/80 hover:bg-white/10 transition-colors text-xs px-3 py-1.5 rounded-full font-medium"
+            >
+              <Icon name={copied ? 'Check' : 'Link'} size={12} />
+              {copied ? 'Скопировано!' : 'Копировать ссылку'}
+            </button>
           </div>
 
           <div className="relative flex justify-center mt-6">
