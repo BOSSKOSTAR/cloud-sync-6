@@ -74,6 +74,10 @@ export default function LandingFooter() {
               {copied ? 'Скопировано!' : 'Копировать ссылку'}
             </button>
           </div>
+          <a href="/promo" className="flex items-center gap-1.5 text-yellow-400/70 hover:text-yellow-400 transition-colors text-xs font-medium">
+            <Icon name="Megaphone" size={13} />
+            Рекламные материалы
+          </a>
           <div className="text-white/30 text-sm">© 2026 Плям про100 · Матричная система заработка</div>
         </div>
       </footer>
