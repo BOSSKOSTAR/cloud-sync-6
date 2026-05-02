@@ -18,6 +18,13 @@ export default function DashboardHeader({ userName }: Props) {
           <span className="font-bold text-white">Плям про<span className="text-yellow-400">100</span></span>
         </div>
         <div className="flex items-center gap-3">
+          <a
+            href="/promo"
+            className="hidden md:flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20 transition-colors font-medium"
+          >
+            <Icon name="Megaphone" size={13} />
+            Реклама
+          </a>
           <span className="text-white/50 text-sm hidden md:block">{userName}</span>
           <Button variant="ghost" size="sm" className="text-white/50 hover:text-white" onClick={() => { logout(); navigate('/') }}>
             <Icon name="LogOut" size={16} />
