@@ -59,18 +59,31 @@ def handler(event: dict, context) -> dict:
         )
         matrix_id = cur.fetchone()[0]
 
-        # Начисляем спонсору за вход нового участника
+        # Заполняем слот в матрице спонсора и начисляем выплату
         cur.execute(f"SELECT referred_by FROM {S}.users WHERE id = %s", (user_id,))
         ref_row = cur.fetchone()
         if ref_row and ref_row[0]:
+            sponsor_id = ref_row[0]
+            # Ищем активную матрицу спонсора по тому же тарифу
+            cur.execute(f"SELECT id, slots_filled FROM {S}.user_matrices WHERE user_id = %s AND tariff_id = %s AND status = 'active' ORDER BY created_at LIMIT 1", (sponsor_id, tariff_id))
+            sponsor_matrix = cur.fetchone()
+            if sponsor_matrix:
+                sponsor_matrix_id = sponsor_matrix[0]
+                next_slot = sponsor_matrix[1] + 1
+                cur.execute(
+                    f"INSERT INTO {S}.matrix_slots (matrix_id, slot_position, filled_by_user_id) VALUES (%s, %s, %s)",
+                    (sponsor_matrix_id, next_slot, user_id)
+                )
+                cur.execute(f"UPDATE {S}.user_matrices SET slots_filled = slots_filled + 1 WHERE id = %s", (sponsor_matrix_id,))
+
             cur.execute(f"SELECT payout_per_slot FROM {S}.matrix_levels WHERE tariff_id = %s AND level_number = 1", (tariff_id,))
             payout_row = cur.fetchone()
             if payout_row:
                 payout = float(payout_row[0])
-                cur.execute(f"UPDATE {S}.users SET balance = balance + %s, total_earned = total_earned + %s WHERE id = %s", (payout, payout, ref_row[0]))
+                cur.execute(f"UPDATE {S}.users SET balance = balance + %s, total_earned = total_earned + %s WHERE id = %s", (payout, payout, sponsor_id))
                 cur.execute(
                     f"INSERT INTO {S}.transactions (user_id, type, amount, status, description) VALUES (%s, 'matrix_payout', %s, 'completed', %s)",
-                    (ref_row[0], payout, f'Выплата за уровень 1 от пользователя {user_id}')
+                    (sponsor_id, payout, f'Выплата за уровень 1 от пользователя {user_id}')
                 )
 
         conn.commit()
