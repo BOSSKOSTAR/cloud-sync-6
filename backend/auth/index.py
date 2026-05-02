@@ -75,7 +75,7 @@ def handler(event: dict, context) -> dict:
 
         return {'statusCode': 200, 'headers': headers, 'body': json.dumps({
             'user_id': row[0], 'name': row[1], 'referral_code': row[2],
-            'balance': float(row[3]), 'total_earned': float(row[4])
+            'balance': float(row[3] or 0), 'total_earned': float(row[4] or 0)
         })}
 
     elif action == 'get_user':
@@ -88,7 +88,7 @@ def handler(event: dict, context) -> dict:
             return {'statusCode': 404, 'headers': headers, 'body': json.dumps({'error': 'Пользователь не найден'})}
         return {'statusCode': 200, 'headers': headers, 'body': json.dumps({
             'user_id': row[0], 'name': row[1], 'referral_code': row[2],
-            'balance': float(row[3]), 'total_earned': float(row[4]), 'created_at': str(row[5])
+            'balance': float(row[3] or 0), 'total_earned': float(row[4] or 0), 'created_at': str(row[5])
         })}
 
     cur.close()
