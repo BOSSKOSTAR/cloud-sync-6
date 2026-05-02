@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Icon from '@/components/ui/icon'
-import api from '@/lib/api'
+import { api } from '@/lib/api'
 
 interface Matrix {
   id: number
