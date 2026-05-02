@@ -10,7 +10,7 @@ import Icon from '@/components/ui/icon'
 export default function Auth({ mode }: { mode: 'login' | 'register' }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const refCode = searchParams.get('ref') || ''
+  const refCode = searchParams.get('ref') || localStorage.getItem('pending_ref') || ''
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -34,6 +34,7 @@ export default function Auth({ mode }: { mode: 'login' | 'register' }) {
       if (mode === 'register') {
         res = await api.register(name.trim(), email.trim(), password.trim(), ref.trim() || undefined)
         if (res.error) { toast.error(res.error); return }
+        localStorage.removeItem('pending_ref')
         toast.success('Аккаунт создан!')
       } else {
         res = await api.login(name.trim(), password.trim())

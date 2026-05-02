@@ -15,6 +15,10 @@ const queryClient = new QueryClient();
 
 const isPrestart = localStorage.getItem("site_prestart") === "1";
 
+// Сохраняем реф. код при заходе по реф. ссылке — чтобы не потерялся при переходах
+const _urlRef = new URLSearchParams(window.location.search).get('ref');
+if (_urlRef) localStorage.setItem('pending_ref', _urlRef);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
