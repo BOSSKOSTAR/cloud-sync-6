@@ -125,7 +125,7 @@ export default function Landing() {
       <section className="max-w-6xl mx-auto px-4 py-10">
         <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-yellow-500/10 border border-white/10 group">
           <img
-            src="https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/files/07c12679-a01d-4303-8090-d3ec6d750f91.jpg"
+            src="https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/files/d616c9a6-4e6a-412b-8f62-e02e92772a96.jpg"
             alt="Плям про100 — зарабатывай приглашая друзей"
             className="w-full object-cover max-h-[420px] transition-transform duration-700 group-hover:scale-105"
           />
