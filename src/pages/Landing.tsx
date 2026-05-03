@@ -143,8 +143,8 @@ export default function Landing() {
                 Выбрать тариф
               </button>
               <a
-                href="https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/files/d616c9a6-4e6a-412b-8f62-e02e92772a96.jpg"
-                download="plyam-banner.jpg"
+                href="https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/bucket/f197ae0a-3122-4fb0-b7f5-7971cd8e7c3d.png"
+                download="plyam-banner.png"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 flex items-center gap-1.5 text-white/50 hover:text-white/80 transition-colors text-xs"
