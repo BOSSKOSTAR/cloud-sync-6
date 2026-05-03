@@ -26,6 +26,28 @@ export default function DashboardReferrals({ refUrl, referrals, copied, onCopy, 
             <Icon name={copied ? 'Check' : 'Copy'} size={16} />
           </Button>
         </div>
+        <div className="flex gap-2 mb-3">
+          <a
+            href={`https://vk.com/share.php?url=${encodeURIComponent(refUrl)}&title=${encodeURIComponent('Присоединяйся и зарабатывай вместе со мной!')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium text-white border border-white/20 hover:border-blue-400/50 transition-all"
+            style={{ background: 'rgba(30, 60, 140, 0.4)' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 15.978h-1.588c-.6 0-.784-.477-1.86-1.558-1.008-.924-1.392-.924-1.392-.924s-.192 0-.192.924v1.404c0 .384-.108.558-.924.558-1.5 0-3.192-.924-4.392-2.604-1.8-2.508-2.292-4.404-2.292-4.404s-.096-.384.308-.384h1.596c.384 0 .516.192.66.576 0 0 .852 2.892 2.292 4.272.588.588.924.672.924.288V9.984c-.048-1.008-.576-1.092-.576-1.092s-.288-.048 0-.384c.288-.336 1.344-.24 1.344-.24h2.688c.384 0 .48.192.48.576v4.32c0 .48.192.576.384.576.384 0 .768-.384 1.536-1.152 1.2-1.2 2.016-3.072 2.016-3.072s.192-.384.576-.384h1.596c.48 0 .576.24.48.576 0 0-.924 2.688-3.024 4.8z"/></svg>
+            ВКонтакте
+          </a>
+          <a
+            href={`https://t.me/share/url?url=${encodeURIComponent(refUrl)}&text=${encodeURIComponent('Присоединяйся и зарабатывай вместе со мной!')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium text-white border border-white/20 hover:border-sky-400/50 transition-all"
+            style={{ background: 'rgba(0, 100, 160, 0.4)' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 14.317l-2.95-.924c-.64-.204-.657-.64.136-.95l11.57-4.461c.537-.194 1.006.131.836.266z"/></svg>
+            Telegram
+          </a>
+        </div>
         <div className="flex items-center gap-2 rounded-xl px-4 py-3 border border-yellow-600/30" style={{ background: 'rgba(120, 90, 0, 0.2)' }}>
           <Icon name="Star" size={14} className="text-yellow-400 shrink-0" />
           <p className="text-yellow-200/80 text-xs">Реферал получает <span className="font-semibold text-yellow-300">Тариф Мини</span>, ты получаешь <span className="font-semibold text-yellow-300">Тариф Мажор</span> — бесплатно</p>
