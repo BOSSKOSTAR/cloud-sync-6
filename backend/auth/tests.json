@@ -1,12 +1,12 @@
 {
   "tests": [
     {
-      "name": "Login user",
+      "name": "Get tariffs check (auth alive)",
       "method": "POST",
       "path": "/",
-      "body": {"action": "login", "name": "TestUser123", "password": "test123"},
-      "expectedStatus": 200,
-      "expectedBody": {"name": "TestUser123"},
+      "body": {"action": "login", "name": "несуществующий", "password": "wrongpass"},
+      "expectedStatus": 401,
+      "expectedBody": {"error": "Неверное имя или пароль"},
       "bodyMatcher": "partial"
     }
   ]
