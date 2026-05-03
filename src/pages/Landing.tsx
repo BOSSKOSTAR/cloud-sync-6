@@ -127,7 +127,7 @@ export default function Landing() {
           <img
             src="https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/bucket/f197ae0a-3122-4fb0-b7f5-7971cd8e7c3d.png"
             alt="Плям про100 — зарабатывай приглашая друзей"
-            className="w-full object-cover max-h-[420px] transition-transform duration-700 group-hover:scale-105"
+            className="w-full object-cover max-h-[420px] transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: 'center top' }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#050a18]/80 via-transparent to-[#050a18]/40 flex items-center px-10">
             <div className="max-w-sm">
