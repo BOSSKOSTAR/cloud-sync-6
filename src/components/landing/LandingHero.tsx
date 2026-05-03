@@ -27,8 +27,13 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
 
   return (
     <>
+      {/* Топ-строка */}
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-r from-yellow-600 via-yellow-500 to-amber-400 text-[#050a18] text-center text-xs sm:text-sm font-semibold py-2 px-4 tracking-wide">
+        Красиво жить не запретишь — но это доступно каждому, и к этому стоит стремиться
+      </div>
+
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#050a18]/90 backdrop-blur border-b border-white/10">
+      <header className="fixed top-8 left-0 right-0 z-50 bg-[#050a18]/90 backdrop-blur border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-xs font-bold">П</div>
