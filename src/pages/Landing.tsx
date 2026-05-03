@@ -135,6 +135,9 @@ export default function Landing() {
               <h2 className="text-3xl font-bold text-white leading-tight mb-3">
                 Зарабатывай<br />приглашая друзей
               </h2>
+              <p className="text-yellow-300 text-sm font-semibold italic mb-3 leading-snug">
+                «Красиво жить не запретишь — но это доступно каждому, и к этому стоит стремиться»
+              </p>
               <p className="text-white/60 text-sm mb-5">От 300 ₽ до 5 880 000 ₽ — выбери свой уровень дохода</p>
               <button
                 onClick={() => document.getElementById('tariffs')?.scrollIntoView({ behavior: 'smooth' })}
