@@ -58,21 +58,66 @@ export default function Funnel() {
 
       {/* ТАРИФЫ */}
       <section className="px-4 py-12 max-w-2xl mx-auto w-full">
-        <h2 className="text-2xl font-bold text-white text-center mb-8">Тарифы</h2>
-        <div className="grid grid-cols-3 gap-3">
+        <h2 className="text-2xl font-bold text-white text-center mb-2">Тарифы</h2>
+        <p className="text-white/40 text-sm text-center mb-8">Выбери свой уровень входа и дохода</p>
+        <div className="space-y-4">
           {[
-            { name: "Мини", price: "300 ₽", earn: "до 37 800 ₽" },
-            { name: "Миди", price: "600 ₽", earn: "до 226 800 ₽", featured: true },
-            { name: "Мажор", price: "1 200 ₽", earn: "до 5 880 000 ₽" },
+            {
+              name: "Мини",
+              price: "300 ₽",
+              earn: "до 8 700 ₽",
+              levels: 5,
+              slots: "2–4 слота",
+              next: "→ автопереход на Минор",
+              featured: false,
+              color: "rgba(10,35,15,0.6)",
+              border: "border-white/10",
+            },
+            {
+              name: "Минор",
+              price: "6 000 ₽",
+              earn: "до 174 000 ₽",
+              levels: 5,
+              slots: "2–4 слота",
+              next: "→ автопереход на Мажор",
+              featured: true,
+              color: "rgba(120,90,0,0.3)",
+              border: "border-yellow-500/60",
+            },
+            {
+              name: "Мажор",
+              price: "120 000 ₽",
+              earn: "до 5 880 000 ₽",
+              levels: 5,
+              slots: "2–4 слота",
+              next: "Финальный уровень",
+              featured: false,
+              color: "rgba(10,35,15,0.6)",
+              border: "border-white/10",
+            },
           ].map((t, i) => (
-            <div key={i} className={`rounded-2xl p-4 text-center border flex flex-col gap-2 ${t.featured ? "border-yellow-500/60" : "border-white/10"}`} style={{ background: t.featured ? "rgba(120,90,0,0.3)" : "rgba(10,35,15,0.6)" }}>
-              {t.featured && <span className="text-xs text-yellow-300 font-semibold">Популярный</span>}
-              <p className="font-bold text-white">{t.name}</p>
-              <p className="text-yellow-400 font-black text-lg">{t.price}</p>
-              <p className="text-white/50 text-xs">{t.earn}</p>
+            <div key={i} className={`rounded-2xl p-5 border flex items-center justify-between gap-4 ${t.border}`} style={{ background: t.color }}>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-black text-white text-lg">{t.name}</p>
+                  {t.featured && <span className="text-xs bg-yellow-600/40 text-yellow-300 px-2 py-0.5 rounded-full font-semibold">Популярный</span>}
+                </div>
+                <p className="text-white/40 text-xs">{t.levels} уровней · {t.slots}</p>
+                <p className="text-white/30 text-xs mt-0.5">{t.next}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-yellow-400 font-black text-xl">{t.price}</p>
+                <p className="text-green-400 text-xs font-semibold">{t.earn}</p>
+              </div>
             </div>
           ))}
         </div>
+        <a href="/register" className="block mt-6">
+          <Button className="w-full py-5 text-base font-bold rounded-2xl" style={{ background: "linear-gradient(90deg,#b8860b,#d4a017)", color: "#fff" }}>
+            Выбрать тариф и начать
+            <Icon name="ArrowRight" size={18} className="ml-2" />
+          </Button>
+        </a>
       </section>
 
       {/* КОНТАКТЫ */}
