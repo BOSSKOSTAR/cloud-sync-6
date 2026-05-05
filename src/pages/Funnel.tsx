@@ -5,31 +5,32 @@ export default function Funnel() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg, #0a1a0a 0%, #0d2010 50%, #0a1a0a 100%)" }}>
 
-      {/* HERO */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border border-yellow-600/40 text-yellow-300" style={{ background: "rgba(120,90,0,0.25)" }}>
-          <Icon name="Sparkles" size={13} />
-          Матричная система заработка
+      {/* БАННЕР */}
+      <section className="px-4 pt-8 pb-2 max-w-2xl mx-auto w-full">
+        <div
+          className="relative rounded-3xl overflow-hidden"
+          style={{
+            backgroundImage: "url(https://cdn.poehali.dev/projects/37f6797b-2bcf-4239-aa52-cd5768175cd6/bucket/351e4084-810c-475e-8417-0b089c0788ab.jpg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+            minHeight: 320,
+          }}
+        >
+          <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.78) 45%, rgba(0,0,0,0.1) 100%)" }} />
+          <div className="relative z-10 p-8 flex flex-col justify-center" style={{ minHeight: 320 }}>
+            <p className="text-xs font-bold tracking-widest text-yellow-400 uppercase mb-3">Начни прямо сейчас</p>
+            <h1 className="text-3xl sm:text-4xl font-black text-white mb-3 leading-tight">
+              Зарабатывай<br />приглашая друзей
+            </h1>
+            <p className="text-yellow-300 italic text-sm mb-2">«Красиво жить не запретишь — но это доступно каждому, и к этому стоит стремиться»</p>
+            <p className="text-white/60 text-sm mb-6">От 300 ₽ до 5 880 000 ₽ — выбери свой уровень дохода</p>
+            <a href="/register">
+              <Button className="font-bold px-6 py-3 rounded-xl text-white" style={{ background: "linear-gradient(90deg,#6c3fc5,#8b5cf6)" }}>
+                Выбрать тариф
+              </Button>
+            </a>
+          </div>
         </div>
-
-        <h1 className="text-4xl sm:text-6xl font-black text-white mb-4 leading-tight">
-          Плям <span style={{ background: "linear-gradient(90deg,#f5c842,#e6a800)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Про100</span>
-        </h1>
-
-        <p className="text-lg sm:text-2xl text-white/70 mb-3 max-w-xl">
-          Зарабатывай приглашая друзей.<br />Три тарифа — три уровня дохода.
-        </p>
-
-        <p className="text-yellow-400 font-semibold text-base mb-10">
-          Вход от 300 ₽ · Заработок до 5 880 000 ₽
-        </p>
-
-        <a href="/register" className="w-full max-w-xs">
-          <Button className="w-full text-lg py-6 font-bold rounded-2xl" style={{ background: "linear-gradient(90deg,#b8860b,#d4a017)", color: "#fff" }}>
-            Начать зарабатывать
-            <Icon name="ArrowRight" size={20} className="ml-2" />
-          </Button>
-        </a>
       </section>
 
       {/* КАК ЭТО РАБОТАЕТ */}
