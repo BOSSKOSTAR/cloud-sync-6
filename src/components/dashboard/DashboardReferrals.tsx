@@ -48,10 +48,7 @@ export default function DashboardReferrals({ refUrl, referrals, copied, onCopy, 
             Telegram
           </a>
         </div>
-        <div className="flex items-center gap-2 rounded-xl px-4 py-3 border border-yellow-600/30" style={{ background: 'rgba(120, 90, 0, 0.2)' }}>
-          <Icon name="Star" size={14} className="text-yellow-400 shrink-0" />
-          <p className="text-yellow-200/80 text-xs">Реферал получает <span className="font-semibold text-yellow-300">Тариф Мини</span>, ты получаешь <span className="font-semibold text-yellow-300">Тариф Мажор</span> — бесплатно</p>
-        </div>
+
       </div>
 
       <div className="rounded-2xl p-6 border border-white/10" style={{ background: 'rgba(5, 25, 10, 0.6)', backdropFilter: 'blur(12px)' }}>
