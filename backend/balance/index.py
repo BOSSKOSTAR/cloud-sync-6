@@ -1,8 +1,40 @@
 import hashlib
 import json
 import os
+import smtplib
 import psycopg2
+from email.mime.text import MIMEText
 from urllib.parse import parse_qs
+
+
+def send_withdrawal_email(req_id, user_name, user_email, amount, sbp_phone, sbp_bank):
+    admin_email = os.environ.get('ADMIN_EMAIL', '')
+    if not admin_email:
+        return
+    admin_url = os.environ.get('ADMIN_SITE_URL', 'https://your-site.ru/admin')
+    body = f"""Новая заявка на вывод средств!
+
+ID заявки: #{req_id}
+Пользователь: {user_name} ({user_email})
+Сумма: {amount} руб.
+Телефон СБП: {sbp_phone}
+Банк: {sbp_bank}
+
+Перейти в админ-панель для подтверждения:
+{admin_url}
+
+---
+Это автоматическое письмо, не отвечайте на него.
+"""
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['Subject'] = f'[Вывод #{req_id}] {user_name} — {amount} руб.'
+    msg['From'] = 'noreply@poehali.dev'
+    msg['To'] = admin_email
+    try:
+        with smtplib.SMTP('smtp.poehali.dev', 587, timeout=10) as s:
+            s.sendmail('noreply@poehali.dev', [admin_email], msg.as_string())
+    except Exception:
+        pass
 
 
 def get_db():
@@ -50,12 +82,13 @@ def handler(event: dict, context) -> dict:
             cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Укажите сумму и номер телефона СБП'})}
 
-        cur.execute("SELECT balance FROM t_p38899835_cloud_sync_6.users WHERE id = %s", (user_id,))
+        cur.execute("SELECT balance, name, email FROM t_p38899835_cloud_sync_6.users WHERE id = %s", (user_id,))
         row = cur.fetchone()
         if not row or float(row[0]) < amount:
             cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Недостаточно средств'})}
 
+        user_name, user_email = row[1], row[2]
         cur.execute("UPDATE t_p38899835_cloud_sync_6.users SET balance = balance - %s WHERE id = %s", (amount, user_id))
         cur.execute(
             "INSERT INTO t_p38899835_cloud_sync_6.withdrawal_requests (user_id, amount, sbp_phone, sbp_bank, status) VALUES (%s, %s, %s, %s, 'pending') RETURNING id",
@@ -68,6 +101,7 @@ def handler(event: dict, context) -> dict:
         )
         conn.commit()
         cur.close(); conn.close()
+        send_withdrawal_email(req_id, user_name, user_email, amount, sbp_phone, sbp_bank)
         return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'request_id': req_id, 'success': True})}
 
     elif action == 'get_transactions':

@@ -31,6 +31,7 @@ export default function Admin() {
   const [reviews, setReviews] = useState<Record<string, unknown>[]>([]);
   const [users, setUsers] = useState<Record<string, unknown>[]>([]);
   const [matrices, setMatrices] = useState<Record<string, unknown>[]>([]);
+  const [withdrawals, setWithdrawals] = useState<Record<string, unknown>[]>([]);
   const [prestart, setPrestart] = useState(() => localStorage.getItem("site_prestart") === "1");
 
   const [dialog, setDialog] = useState<{ type: string; item?: Record<string, unknown> } | null>(null);
@@ -50,18 +51,26 @@ export default function Admin() {
   }
 
   async function loadAll() {
-    const [b, n, r, u, m] = await Promise.all([
+    const [b, n, r, u, m, w] = await Promise.all([
       api("/banners", "GET", token),
       api("/news", "GET", token),
       api("/reviews", "GET", token),
       api("/users", "GET", token),
       api("/matrices", "GET", token),
+      api("/withdrawals", "GET", token),
     ]);
     if (Array.isArray(b)) setBanners(b);
     if (Array.isArray(n)) setNews(n);
     if (Array.isArray(r)) setReviews(r);
     if (Array.isArray(u)) setUsers(u);
     if (Array.isArray(m)) setMatrices(m);
+    if (Array.isArray(w)) setWithdrawals(w);
+  }
+
+  async function markPaid(id: number) {
+    await api(`/withdrawals/${id}`, "PUT", token, { status: "completed" });
+    toast.success("Заявка отмечена как выплачено");
+    loadAll();
   }
 
   useEffect(() => {
@@ -156,14 +165,57 @@ export default function Admin() {
       </div>
 
       <div className="p-6">
-        <Tabs defaultValue="banners">
+        <Tabs defaultValue="withdrawals">
           <TabsList className="mb-6">
+            <TabsTrigger value="withdrawals">
+              Выводы {withdrawals.filter(w => w.status === "pending").length > 0 && (
+                <span className="ml-1.5 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {withdrawals.filter(w => w.status === "pending").length}
+                </span>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="banners">Баннеры ({banners.length})</TabsTrigger>
             <TabsTrigger value="news">Новости ({news.length})</TabsTrigger>
             <TabsTrigger value="reviews">Отзывы ({reviews.length})</TabsTrigger>
             <TabsTrigger value="users">Пользователи ({users.length})</TabsTrigger>
             <TabsTrigger value="matrices">Матрицы ({matrices.length})</TabsTrigger>
           </TabsList>
+
+          {/* WITHDRAWALS */}
+          <TabsContent value="withdrawals">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Заявки на вывод средств</h2>
+              <Button size="sm" variant="outline" onClick={loadAll}><Icon name="RefreshCw" size={16} className="mr-2" />Обновить</Button>
+            </div>
+            <div className="space-y-3">
+              {withdrawals.map((w) => (
+                <Card key={w.id} className={w.status === "pending" ? "border-orange-400/50" : ""}>
+                  <CardContent className="py-3 flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{w.user_name} <span className="text-muted-foreground text-sm">#{w.user_id}</span></p>
+                      <p className="text-sm text-muted-foreground">{w.user_email}</p>
+                      <p className="text-sm mt-1">
+                        <span className="font-semibold text-green-600">{Number(w.amount).toFixed(2)} ₽</span>
+                        <span className="text-muted-foreground"> · СБП: {w.sbp_phone} ({w.sbp_bank})</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{new Date(w.created_at).toLocaleString("ru-RU")}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge variant={w.status === "pending" ? "destructive" : "secondary"}>
+                        {w.status === "pending" ? "Ожидает выплаты" : "Выплачено"}
+                      </Badge>
+                      {w.status === "pending" && (
+                        <Button size="sm" onClick={() => markPaid(w.id as number)} className="bg-green-600 hover:bg-green-700 text-white">
+                          <Icon name="Check" size={14} className="mr-1" />Выплачено
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {withdrawals.length === 0 && <p className="text-muted-foreground text-sm">Заявок пока нет</p>}
+            </div>
+          </TabsContent>
 
           {/* BANNERS */}
           <TabsContent value="banners">

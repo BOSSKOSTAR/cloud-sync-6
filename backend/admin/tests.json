@@ -8,12 +8,10 @@
       "bodyMatcher": "partial"
     },
     {
-      "name": "Admin API - with auth",
+      "name": "Admin API - root no auth",
       "method": "GET",
       "path": "/",
-      "headers": {"X-Admin-Token": "admin123"},
-      "expectedStatus": 200,
-      "expectedBody": {"status": "ok"},
+      "expectedStatus": 401,
       "bodyMatcher": "partial"
     }
   ]

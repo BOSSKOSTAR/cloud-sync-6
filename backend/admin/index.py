@@ -59,6 +59,9 @@ def handler(event: dict, context) -> dict:
     if "/matrices" in path:
         return handle_matrices(method, path, event.get("queryStringParameters") or {})
 
+    if "/withdrawals" in path:
+        return handle_withdrawals(method, path, body)
+
     return resp({"status": "ok", "message": "Admin API"})
 
 
@@ -211,6 +214,42 @@ def handle_matrices(method, path, params):
         keys = ["id", "user_id", "user_name", "user_email", "tariff_name", "level_number", "status", "slots_filled", "created_at", "completed_at", "total_slots"]
         return resp([dict(zip(keys, r)) for r in rows])
 
+    return err("Неверный запрос")
+
+
+def handle_withdrawals(method, path, body):
+    conn = get_conn()
+    cur = conn.cursor()
+    item_id = extract_id(path, "withdrawals")
+
+    if method == "GET":
+        cur.execute("""
+            SELECT wr.id, wr.user_id, u.name as user_name, u.email as user_email,
+                   wr.amount, wr.sbp_phone, wr.sbp_bank, wr.status, wr.created_at, wr.processed_at
+            FROM t_p38899835_cloud_sync_6.withdrawal_requests wr
+            LEFT JOIN t_p38899835_cloud_sync_6.users u ON u.id = wr.user_id
+            ORDER BY CASE WHEN wr.status = 'pending' THEN 0 ELSE 1 END, wr.created_at DESC
+        """)
+        rows = cur.fetchall()
+        keys = ["id", "user_id", "user_name", "user_email", "amount", "sbp_phone", "sbp_bank", "status", "created_at", "processed_at"]
+        cur.close(); conn.close()
+        return resp([dict(zip(keys, r)) for r in rows])
+
+    if method == "PUT" and item_id:
+        status = body.get("status", "completed")
+        cur.execute(
+            "UPDATE t_p38899835_cloud_sync_6.withdrawal_requests SET status = %s, processed_at = now() WHERE id = %s",
+            (status, item_id)
+        )
+        cur.execute(
+            "UPDATE t_p38899835_cloud_sync_6.transactions SET status = %s WHERE description = %s",
+            (status, f'Заявка на вывод #{item_id}')
+        )
+        conn.commit()
+        cur.close(); conn.close()
+        return resp({"message": "Статус обновлён"})
+
+    cur.close(); conn.close()
     return err("Неверный запрос")
 
 
