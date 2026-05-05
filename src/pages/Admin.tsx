@@ -62,7 +62,6 @@ export default function Admin() {
       api("/matrices", "GET", tok),
       api("/withdrawals", "GET", tok),
     ]);
-    console.log('admin loadAll results:', {b, n, r, u, m, w});
     if (Array.isArray(b)) setBanners(b);
     if (Array.isArray(n)) setNews(n);
     if (Array.isArray(r)) setReviews(r);
