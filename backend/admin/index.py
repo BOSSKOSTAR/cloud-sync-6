@@ -3,7 +3,31 @@
 """
 import json
 import os
+import smtplib
 import psycopg2
+from email.mime.text import MIMEText
+
+
+def send_paid_email(user_email, user_name, amount, req_id):
+    if not user_email:
+        return
+    body = f"""Привет, {user_name}!
+
+Твоя заявка на вывод #{req_id} на сумму {amount} руб. выплачена.
+
+Деньги уже отправлены на твой счёт через СБП.
+
+Спасибо, что с нами!
+"""
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['Subject'] = f'Выплата {amount} руб. — заявка #{req_id} выполнена'
+    msg['From'] = 'noreply@poehali.dev'
+    msg['To'] = user_email
+    try:
+        with smtplib.SMTP('smtp.poehali.dev', 587, timeout=10) as s:
+            s.sendmail('noreply@poehali.dev', [user_email], msg.as_string())
+    except Exception:
+        pass
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
@@ -237,6 +261,13 @@ def handle_withdrawals(method, path, body):
 
     if method == "PUT" and item_id:
         status = body.get("status", "completed")
+        cur.execute("""
+            SELECT wr.amount, u.email, u.name
+            FROM t_p38899835_cloud_sync_6.withdrawal_requests wr
+            LEFT JOIN t_p38899835_cloud_sync_6.users u ON u.id = wr.user_id
+            WHERE wr.id = %s
+        """, (item_id,))
+        row = cur.fetchone()
         cur.execute(
             "UPDATE t_p38899835_cloud_sync_6.withdrawal_requests SET status = %s, processed_at = now() WHERE id = %s",
             (status, item_id)
@@ -247,6 +278,8 @@ def handle_withdrawals(method, path, body):
         )
         conn.commit()
         cur.close(); conn.close()
+        if row and status == "completed":
+            send_paid_email(row[1], row[2], float(row[0]), item_id)
         return resp({"message": "Статус обновлён"})
 
     cur.close(); conn.close()
