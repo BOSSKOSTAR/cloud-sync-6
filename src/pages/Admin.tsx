@@ -44,20 +44,21 @@ export default function Admin() {
     if (res.status === "ok") {
       localStorage.setItem("admin_token", token);
       setAuthed(true);
-      loadAll();
+      loadAll(token);
     } else {
       toast.error("Неверный пароль");
     }
   }
 
-  async function loadAll() {
+  async function loadAll(t?: string) {
+    const tok = t ?? token;
     const [b, n, r, u, m, w] = await Promise.all([
-      api("/banners", "GET", token),
-      api("/news", "GET", token),
-      api("/reviews", "GET", token),
-      api("/users", "GET", token),
-      api("/matrices", "GET", token),
-      api("/withdrawals", "GET", token),
+      api("/banners", "GET", tok),
+      api("/news", "GET", tok),
+      api("/reviews", "GET", tok),
+      api("/users", "GET", tok),
+      api("/matrices", "GET", tok),
+      api("/withdrawals", "GET", tok),
     ]);
     if (Array.isArray(b)) setBanners(b);
     if (Array.isArray(n)) setNews(n);
@@ -76,7 +77,7 @@ export default function Admin() {
   useEffect(() => {
     if (token) {
       api("/", "GET", token).then((res) => {
-        if (res.status === "ok") { setAuthed(true); loadAll(); }
+        if (res.status === "ok") { setAuthed(true); loadAll(token); }
       });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
