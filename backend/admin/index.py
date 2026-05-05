@@ -64,27 +64,32 @@ def handler(event: dict, context) -> dict:
 
     method = event.get("httpMethod", "GET")
     path = event.get("path", "/")
+    params = event.get("queryStringParameters") or {}
+    resource = params.get("resource", "").strip("/")
     body = {}
     if event.get("body"):
         body = json.loads(event["body"])
 
-    if "/banners" in path:
-        return handle_banners(method, path, body, event.get("queryStringParameters") or {})
+    # поддержка как ?resource=banners/123, так и пути /banners/123
+    combined = resource or path.strip("/")
 
-    if "/news" in path:
-        return handle_news(method, path, body, event.get("queryStringParameters") or {})
+    if combined.startswith("banners"):
+        return handle_banners(method, combined, body, params)
 
-    if "/reviews" in path:
-        return handle_reviews(method, path, body, event.get("queryStringParameters") or {})
+    if combined.startswith("news"):
+        return handle_news(method, combined, body, params)
 
-    if "/users" in path:
-        return handle_users(method, path, event.get("queryStringParameters") or {})
+    if combined.startswith("reviews"):
+        return handle_reviews(method, combined, body, params)
 
-    if "/matrices" in path:
-        return handle_matrices(method, path, event.get("queryStringParameters") or {})
+    if combined.startswith("users"):
+        return handle_users(method, combined, params)
 
-    if "/withdrawals" in path:
-        return handle_withdrawals(method, path, body)
+    if combined.startswith("matrices"):
+        return handle_matrices(method, combined, params)
+
+    if combined.startswith("withdrawals"):
+        return handle_withdrawals(method, combined, body)
 
     return resp({"status": "ok", "message": "Admin API"})
 
@@ -289,6 +294,9 @@ def handle_withdrawals(method, path, body):
 def extract_id(path, resource):
     parts = path.strip("/").split("/")
     try:
+        # path может быть "banners/5" или просто "5" после resource
+        if len(parts) >= 2 and parts[0] == resource:
+            return int(parts[1])
         idx = parts.index(resource)
         if idx + 1 < len(parts):
             return int(parts[idx + 1])

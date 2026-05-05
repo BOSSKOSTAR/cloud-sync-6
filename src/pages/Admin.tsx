@@ -14,7 +14,9 @@ import { toast } from "sonner";
 const ADMIN_URL = "https://functions.poehali.dev/fd69d698-1f88-4fda-b35b-73645337fa4d";
 
 function api(path: string, method = "GET", token: string, body?: object) {
-  return fetch(`${ADMIN_URL}${path}`, {
+  const resource = path.replace(/^\//, "");
+  const url = resource === "" ? ADMIN_URL : `${ADMIN_URL}?resource=${resource}`;
+  return fetch(url, {
     method,
     headers: { "Content-Type": "application/json", "X-Admin-Token": token },
     body: body ? JSON.stringify(body) : undefined,
@@ -60,6 +62,7 @@ export default function Admin() {
       api("/matrices", "GET", tok),
       api("/withdrawals", "GET", tok),
     ]);
+    console.log('admin loadAll results:', {b, n, r, u, m, w});
     if (Array.isArray(b)) setBanners(b);
     if (Array.isArray(n)) setNews(n);
     if (Array.isArray(r)) setReviews(r);
