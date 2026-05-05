@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Promo from "./pages/Promo";
+import Funnel from "./pages/Funnel";
 import ComingSoon from "./pages/ComingSoon";
 import NotFound from "./pages/NotFound";
 
@@ -41,6 +42,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/promo" element={<Promo />} />
+                <Route path="/voronka" element={<Funnel />} />
                 <Route path="*" element={<NotFound />} />
               </>
             )}
