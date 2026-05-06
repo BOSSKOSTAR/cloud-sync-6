@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Promo from "./pages/Promo";
 import Funnel from "./pages/Funnel";
+import Vizitka from "./pages/Vizitka";
 import ComingSoon from "./pages/ComingSoon";
 import NotFound from "./pages/NotFound";
 
@@ -43,6 +44,7 @@ const App = () => (
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/promo" element={<Promo />} />
                 <Route path="/voronka" element={<Funnel />} />
+                <Route path="/vizitka" element={<Vizitka />} />
                 <Route path="*" element={<NotFound />} />
               </>
             )}
