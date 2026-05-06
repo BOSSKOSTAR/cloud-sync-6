@@ -51,6 +51,13 @@ const Vizitka = () => {
                   +7 951 615-22-57
                 </Button>
               </a>
+
+              <a href="https://preview--cloud-sync-6.poehali.dev/register?ref=D62OI096" target="_blank" rel="noopener noreferrer">
+                <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl py-5 text-base gap-2">
+                  <Icon name="Rocket" size={20} />
+                  Зарегистрироваться и заработать
+                </Button>
+              </a>
             </div>
 
             {/* Tag */}
