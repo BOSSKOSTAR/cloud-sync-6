@@ -70,7 +70,7 @@ def handler(event: dict, context) -> dict:
         cur.close(); conn.close()
         if not row:
             return {'statusCode': 404, 'headers': headers, 'body': json.dumps({'error': 'Не найден'})}
-        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'balance': float(row[0]), 'total_earned': float(row[1])})}
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'balance': float(row[0] or 0), 'total_earned': float(row[1] or 0)})}
 
     elif action == 'request_withdrawal':
         user_id = body.get('user_id')
