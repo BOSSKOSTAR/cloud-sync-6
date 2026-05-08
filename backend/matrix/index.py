@@ -80,7 +80,7 @@ def handler(event: dict, context) -> dict:
             payout_row = cur.fetchone()
             if payout_row:
                 payout = float(payout_row[0])
-                cur.execute(f"UPDATE {S}.users SET balance = balance + %s, total_earned = total_earned + %s WHERE id = %s", (payout, payout, sponsor_id))
+                cur.execute(f"UPDATE {S}.users SET balance = balance + %s, total_earned = COALESCE(total_earned, 0) + %s WHERE id = %s", (payout, payout, sponsor_id))
                 cur.execute(
                     f"INSERT INTO {S}.transactions (user_id, type, amount, status, description) VALUES (%s, 'matrix_payout', %s, 'completed', %s)",
                     (sponsor_id, payout, f'Выплата за уровень 1 от пользователя {user_id}')

@@ -6,7 +6,7 @@
       "path": "/",
       "body": {"action": "get_tariffs"},
       "expectedStatus": 200,
-      "expectedBody": {"tariffs": []},
+      "expectedBody": {"tariffs": [{"slug": "mini"}]},
       "bodyMatcher": "partial"
     }
   ]
