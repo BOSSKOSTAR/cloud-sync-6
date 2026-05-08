@@ -57,38 +57,6 @@ def handler(event: dict, context) -> dict:
         )
         user_id = cur.fetchone()[0]
 
-        # Если пришёл по реферальной ссылке — начисляем тарифы бесплатно
-        if referrer_id:
-            # Реферал получает Тариф 1 (Мини)
-            cur.execute(
-                f"SELECT id FROM {S}.user_matrices WHERE user_id = %s AND tariff_id = 1 AND status = 'active'",
-                (user_id,)
-            )
-            if not cur.fetchone():
-                cur.execute(
-                    f"INSERT INTO {S}.user_matrices (user_id, tariff_id, level_number, status) VALUES (%s, 1, 1, 'active')",
-                    (user_id,)
-                )
-                cur.execute(
-                    f"INSERT INTO {S}.transactions (user_id, type, amount, status, description) VALUES (%s, 'bonus', 0, 'completed', %s)",
-                    (user_id, 'Бонус за регистрацию по реферальной ссылке — Тариф Мини')
-                )
-
-            # Спонсор получает Тариф 3 (Мажор)
-            cur.execute(
-                f"SELECT id FROM {S}.user_matrices WHERE user_id = %s AND tariff_id = 3 AND status = 'active'",
-                (referrer_id,)
-            )
-            if not cur.fetchone():
-                cur.execute(
-                    f"INSERT INTO {S}.user_matrices (user_id, tariff_id, level_number, status) VALUES (%s, 3, 1, 'active')",
-                    (referrer_id,)
-                )
-                cur.execute(
-                    f"INSERT INTO {S}.transactions (user_id, type, amount, status, description) VALUES (%s, 'bonus', 0, 'completed', %s)",
-                    (referrer_id, f'Бонус за привлечение реферала {name} — Тариф Мажор')
-                )
-
         conn.commit()
         cur.close()
         conn.close()
