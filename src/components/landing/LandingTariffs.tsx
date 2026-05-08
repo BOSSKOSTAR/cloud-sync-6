@@ -29,6 +29,8 @@ interface LandingTariffsProps {
 
 export default function LandingTariffs({ tariffs, activeTab, setActiveTab }: LandingTariffsProps) {
   const navigate = useNavigate()
+  const pendingRef = localStorage.getItem('pending_ref')
+  const toRegister = pendingRef ? `/register?ref=${pendingRef}` : '/register'
   const activeTariff = tariffs.find(t => t.key === activeTab)!
 
   return (
@@ -179,7 +181,7 @@ export default function LandingTariffs({ tariffs, activeTab, setActiveTab }: Lan
           <Button
             size="lg"
             className={`w-full mt-6 bg-gradient-to-r ${activeTariff.color} hover:opacity-90 text-white shadow-lg transition-all`}
-            onClick={() => navigate('/register')}
+            onClick={() => navigate(toRegister)}
           >
             <Icon name="Zap" size={16} className="mr-2" />
             Начать с тарифа «{activeTariff.name}»

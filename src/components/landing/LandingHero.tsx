@@ -15,6 +15,8 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
   const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
 
+  const pendingRef = localStorage.getItem('pending_ref')
+  const toRegister = pendingRef ? `/register?ref=${pendingRef}` : '/register'
   const siteUrl = window.location.origin
   const shareText = 'Заходи в Плям про100 — зарабатывай приглашая друзей! Вход от 300 ₽'
 
@@ -44,7 +46,7 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
             <Button variant="ghost" className="text-white/80 hover:text-white" onClick={() => navigate('/login')}>
               Войти
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/register')}>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate(toRegister)}>
               Начать
             </Button>
           </div>
@@ -84,7 +86,7 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
             style={{ transitionDelay: '400ms' }}>
             <Button size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 transition-all"
-              onClick={() => navigate('/register')}>
+              onClick={() => navigate(toRegister)}>
               <Icon name="Zap" size={16} className="mr-2" />
               Начать зарабатывать
             </Button>

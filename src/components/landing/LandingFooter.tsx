@@ -7,6 +7,8 @@ export default function LandingFooter() {
   const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
   const siteUrl = window.location.origin
+  const pendingRef = localStorage.getItem('pending_ref')
+  const toRegister = pendingRef ? `/register?ref=${pendingRef}` : '/register'
   const shareText = 'Заходи в Плям про100 — зарабатывай приглашая друзей! Вход от 300 ₽'
 
   function handleCopy() {
@@ -29,7 +31,7 @@ export default function LandingFooter() {
               <p className="text-white/50 mb-8">Регистрация бесплатна. Вход в матрицу от 300 ₽.</p>
               <Button size="lg"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-10 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 transition-all"
-                onClick={() => navigate('/register')}>
+                onClick={() => navigate(toRegister)}>
                 Зарегистрироваться бесплатно
               </Button>
               <div className="mt-6 flex justify-center">
