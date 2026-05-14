@@ -5,6 +5,7 @@ import Roulette from "@/components/casino/Roulette";
 import Lotto from "@/components/casino/Lotto";
 import Leaderboard from "@/components/casino/Leaderboard";
 import DailyBonus from "@/components/casino/DailyBonus";
+import ShareScore from "@/components/casino/ShareScore";
 
 type Tab = "slots" | "roulette" | "lotto" | "leaders";
 
@@ -22,6 +23,7 @@ export default function Casino() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg, #0a1a0d 0%, #0d1f10 50%, #0a150c 100%)" }}>
       <DailyBonus />
+
       {/* Header */}
       <header className="border-b border-yellow-600/20 px-4 py-3" style={{ background: "rgba(5,20,8,0.9)", backdropFilter: "blur(12px)" }}>
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -29,15 +31,18 @@ export default function Casino() {
             <span className="text-2xl">🎰</span>
             <h1 className="text-xl font-bold text-yellow-400">LuckyCasino</h1>
           </div>
-          <div className="flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-4 py-1.5">
-            <span className="text-yellow-400 text-lg">🪙</span>
-            <span className="text-yellow-300 font-bold text-lg">{coins.toLocaleString()}</span>
-            <button
-              onClick={() => addCoins(500)}
-              className="ml-2 text-xs bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-2 py-0.5 rounded-full transition-colors"
-            >
-              +500
-            </button>
+          <div className="flex items-center gap-3">
+            <ShareScore />
+            <div className="flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-4 py-1.5">
+              <span className="text-yellow-400 text-lg">🪙</span>
+              <span className="text-yellow-300 font-bold text-lg">{coins.toLocaleString()}</span>
+              <button
+                onClick={() => addCoins(500)}
+                className="ml-2 text-xs bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-2 py-0.5 rounded-full transition-colors"
+              >
+                +500
+              </button>
+            </div>
           </div>
         </div>
       </header>
