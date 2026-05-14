@@ -1,0 +1,21 @@
+{
+  "tests": [
+    {
+      "name": "Get leaderboard",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {"leaders": []},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Post score",
+      "method": "POST",
+      "path": "/",
+      "body": {"nickname": "ТестИгрок", "coins": 2500},
+      "expectedStatus": 200,
+      "expectedBody": {"ok": true},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

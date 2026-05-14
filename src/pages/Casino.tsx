@@ -3,18 +3,19 @@ import { useCoins } from "@/context/CoinsContext";
 import Slots from "@/components/casino/Slots";
 import Roulette from "@/components/casino/Roulette";
 import Lotto from "@/components/casino/Lotto";
-import Icon from "@/components/ui/icon";
+import Leaderboard from "@/components/casino/Leaderboard";
 
-type Tab = "slots" | "roulette" | "lotto";
+type Tab = "slots" | "roulette" | "lotto" | "leaders";
 
 export default function Casino() {
   const [tab, setTab] = useState<Tab>("slots");
   const { coins, addCoins } = useCoins();
 
-  const tabs: { id: Tab; label: string; icon: string; emoji: string }[] = [
-    { id: "slots", label: "Слоты", icon: "Dices", emoji: "🎰" },
-    { id: "roulette", label: "Рулетка", icon: "Circle", emoji: "🎡" },
-    { id: "lotto", label: "Лото", icon: "Hash", emoji: "🎱" },
+  const tabs: { id: Tab; label: string; emoji: string }[] = [
+    { id: "slots", label: "Слоты", emoji: "🎰" },
+    { id: "roulette", label: "Рулетка", emoji: "🎡" },
+    { id: "lotto", label: "Лото", emoji: "🎱" },
+    { id: "leaders", label: "Топ", emoji: "🏆" },
   ];
 
   return (
@@ -46,14 +47,14 @@ export default function Casino() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 font-semibold text-sm transition-all border-b-2 ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 font-semibold text-sm transition-all border-b-2 ${
                 tab === t.id
                   ? "border-yellow-400 text-yellow-400 bg-yellow-400/5"
                   : "border-transparent text-gray-400 hover:text-gray-200"
               }`}
             >
               <span>{t.emoji}</span>
-              <span>{t.label}</span>
+              <span className="hidden sm:inline">{t.label}</span>
             </button>
           ))}
         </div>
@@ -65,6 +66,7 @@ export default function Casino() {
           {tab === "slots" && <Slots />}
           {tab === "roulette" && <Roulette />}
           {tab === "lotto" && <Lotto />}
+          {tab === "leaders" && <Leaderboard />}
         </div>
       </main>
 
