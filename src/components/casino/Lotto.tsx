@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCoins } from "@/context/CoinsContext";
+import { soundJackpot, soundWin, soundLose, soundReveal, soundMatch, soundBet } from "@/lib/casinoSounds";
 
 const TOTAL_NUMBERS = 20;
 const DRAW_COUNT = 5;
@@ -36,8 +37,10 @@ export default function Lotto() {
     if (playing) return;
     if (picked.includes(n)) {
       setPicked(picked.filter((x) => x !== n));
+      soundBet();
     } else if (picked.length < PICK_COUNT) {
       setPicked([...picked, n]);
+      soundBet();
     }
   };
 
@@ -45,6 +48,7 @@ export default function Lotto() {
     if (picked.length !== PICK_COUNT) return;
     if (!removeCoins(bet)) {
       setMessage({ text: "Недостаточно монет!", win: false });
+      soundLose();
       return;
     }
 
@@ -57,17 +61,21 @@ export default function Lotto() {
     numbers.forEach((num, i) => {
       setTimeout(() => {
         setRevealing((prev) => [...prev, num]);
+        if (picked.includes(num)) { soundMatch(); } else { soundReveal(); }
+
         if (i === numbers.length - 1) {
           const matches = picked.filter((p) => numbers.includes(p)).length;
           const mult = PAYOUTS[matches] || 0;
           if (mult > 0) {
             const win = bet * mult;
             addCoins(win);
+            if (matches === 5) { soundJackpot(); } else { soundWin(); }
             setMessage({
               text: `🎉 ${matches} совпадений! +${win} монет (x${mult})`,
               win: true,
             });
           } else {
+            soundLose();
             setMessage({ text: `${matches} совпадений. Не повезло!`, win: false });
           }
           setPlaying(false);

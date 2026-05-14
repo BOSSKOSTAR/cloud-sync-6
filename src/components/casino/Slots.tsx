@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useCoins } from "@/context/CoinsContext";
+import { soundSpin, soundTick, soundJackpot, soundWin, soundLose, soundBet } from "@/lib/casinoSounds";
 
 const SYMBOLS = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "7️⃣", "🔔"];
 
@@ -33,11 +34,13 @@ export default function Slots() {
     if (spinning) return;
     if (!removeCoins(bet)) {
       setMessage({ text: "Недостаточно монет!", win: false });
+      soundLose();
       return;
     }
     setMessage(null);
     setSpinning(true);
     setSpinReels([true, true, true]);
+    soundSpin();
 
     const finalSymbols = [randomSymbol(), randomSymbol(), randomSymbol()];
     const displayReels = [...reels];
@@ -49,6 +52,7 @@ export default function Slots() {
       const interval = setInterval(() => {
         displayReels[i] = randomSymbol();
         setReels([...displayReels]);
+        soundTick();
       }, 80);
       intervalRefs.current.push(interval);
 
@@ -69,6 +73,7 @@ export default function Slots() {
             const multiplier = PAYOUTS[a] || 5;
             const win = bet * multiplier;
             addCoins(win);
+            soundJackpot();
             setMessage({ text: `🎉 Джекпот! +${win} монет (x${multiplier})`, win: true });
           } else if (a === b || b === c || a === c) {
             const matchSymbol = a === b ? a : c;
@@ -76,11 +81,14 @@ export default function Slots() {
             const win = bet * multiplier;
             if (win > 0) {
               addCoins(win);
+              soundWin();
               setMessage({ text: `✨ Две совпало! +${win} монет`, win: true });
             } else {
+              soundLose();
               setMessage({ text: "Почти! Попробуй ещё раз", win: false });
             }
           } else {
+            soundLose();
             setMessage({ text: "Не повезло, крути ещё!", win: false });
           }
         }
@@ -132,7 +140,7 @@ export default function Slots() {
           {BET_OPTIONS.map((b) => (
             <button
               key={b}
-              onClick={() => setBet(b)}
+              onClick={() => { setBet(b); soundBet(); }}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                 bet === b
                   ? "bg-yellow-400 text-black"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCoins } from "@/context/CoinsContext";
+import { soundBonus } from "@/lib/casinoSounds";
 
 const BONUS_AMOUNTS = [200, 300, 500, 750, 1000, 1500, 2000];
 const STORAGE_KEY = "casino_daily_bonus";
@@ -51,6 +52,7 @@ export default function DailyBonus() {
     const newStreak = data.lastClaimed === yesterdayStr ? Math.min(data.streak + 1, 7) : 1;
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ lastClaimed: today, streak: newStreak }));
+    soundBonus();
     addCoins(bonusAmount);
     setClaimed(true);
     setTimeout(() => setShow(false), 2000);

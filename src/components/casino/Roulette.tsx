@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCoins } from "@/context/CoinsContext";
+import { soundSpin, soundTick, soundWin, soundJackpot, soundLose, soundBet } from "@/lib/casinoSounds";
 
 const RED_NUMBERS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
 const BLACK_NUMBERS = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
@@ -49,22 +50,29 @@ export default function Roulette() {
     const totalCost = bets.reduce((s, b) => s + b.amount, 0);
     if (!removeCoins(totalCost)) {
       setMessage({ text: "Недостаточно монет!", win: false });
+      soundLose();
       return;
     }
 
     setSpinning(true);
     setMessage(null);
+    soundSpin();
 
     let angle = ballAngle;
     let speed = 30;
     const spinCount = 20 + Math.floor(Math.random() * 20);
     let ticks = 0;
+    let lastTick = 0;
 
     const interval = setInterval(() => {
       angle += speed;
       setBallAngle(angle % 360);
       ticks++;
       if (ticks > spinCount) speed = Math.max(1, speed - 2);
+      if (ticks - lastTick > Math.max(2, Math.floor(30 / speed))) {
+        soundTick();
+        lastTick = ticks;
+      }
       if (speed <= 1 && ticks > spinCount + 10) {
         clearInterval(interval);
         const num = Math.floor(Math.random() * 37);
@@ -72,6 +80,7 @@ export default function Roulette() {
         setSpinning(false);
 
         let totalWin = 0;
+        let hasNumberBetWin = false;
         bets.forEach((b) => {
           const color = getColor(num);
           let win = false;
@@ -81,7 +90,7 @@ export default function Roulette() {
           else if (b.type === "odd" && num % 2 !== 0) win = true;
           else if (b.type === "low" && num >= 1 && num <= 18) win = true;
           else if (b.type === "high" && num >= 19 && num <= 36) win = true;
-          else if (b.type === "number" && b.value === num) win = true;
+          else if (b.type === "number" && b.value === num) { win = true; hasNumberBetWin = true; }
 
           if (win) {
             const mult = b.type === "number" ? 35 : 2;
@@ -91,8 +100,10 @@ export default function Roulette() {
 
         if (totalWin > 0) {
           addCoins(totalWin);
+          if (hasNumberBetWin) { soundJackpot(); } else { soundWin(); }
           setMessage({ text: `🎉 Выпало ${num}! Выигрыш: +${totalWin} монет`, win: true });
         } else {
+          soundLose();
           setMessage({ text: `Выпало ${num}. Не повезло, попробуй снова!`, win: false });
         }
         setBets([]);
@@ -223,7 +234,7 @@ export default function Roulette() {
         </div>
 
         <button
-          onClick={addBet}
+          onClick={() => { addBet(); soundBet(); }}
           className="w-full py-2 rounded-lg text-sm font-bold bg-green-600 hover:bg-green-500 text-white transition-colors"
         >
           + Добавить ставку
