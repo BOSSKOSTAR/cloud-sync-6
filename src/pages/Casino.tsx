@@ -4,6 +4,7 @@ import Slots from "@/components/casino/Slots";
 import Roulette from "@/components/casino/Roulette";
 import Lotto from "@/components/casino/Lotto";
 import Leaderboard from "@/components/casino/Leaderboard";
+import DailyBonus from "@/components/casino/DailyBonus";
 
 type Tab = "slots" | "roulette" | "lotto" | "leaders";
 
@@ -20,6 +21,7 @@ export default function Casino() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg, #0a1a0d 0%, #0d1f10 50%, #0a150c 100%)" }}>
+      <DailyBonus />
       {/* Header */}
       <header className="border-b border-yellow-600/20 px-4 py-3" style={{ background: "rgba(5,20,8,0.9)", backdropFilter: "blur(12px)" }}>
         <div className="max-w-4xl mx-auto flex items-center justify-between">
