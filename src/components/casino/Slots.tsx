@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useCoins } from "@/context/CoinsContext";
 import { soundSpin, soundTick, soundJackpot, soundWin, soundLose, soundBet } from "@/lib/casinoSounds";
+import Confetti from "@/components/casino/Confetti";
 
 const SYMBOLS = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "7️⃣", "🔔"];
 
@@ -28,6 +29,7 @@ export default function Slots() {
   const [bet, setBet] = useState(25);
   const [message, setMessage] = useState<{ text: string; win: boolean } | null>(null);
   const [spinReels, setSpinReels] = useState([false, false, false]);
+  const [confetti, setConfetti] = useState(false);
   const intervalRefs = useRef<ReturnType<typeof setInterval>[]>([]);
 
   const spin = () => {
@@ -74,6 +76,8 @@ export default function Slots() {
             const win = bet * multiplier;
             addCoins(win);
             soundJackpot();
+            setConfetti(true);
+            setTimeout(() => setConfetti(false), 4000);
             setMessage({ text: `🎉 Джекпот! +${win} монет (x${multiplier})`, win: true });
           } else if (a === b || b === c || a === c) {
             const matchSymbol = a === b ? a : c;
@@ -98,6 +102,7 @@ export default function Slots() {
 
   return (
     <div className="flex flex-col items-center gap-6">
+      <Confetti active={confetti} />
       <div className="text-center">
         <h2 className="text-2xl font-bold text-yellow-400">🎰 Слоты</h2>
         <p className="text-gray-400 text-sm mt-1">Совпади 3 символа — сорви джекпот!</p>

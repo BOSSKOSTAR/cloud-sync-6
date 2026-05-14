@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useCoins } from "@/context/CoinsContext";
 import { soundJackpot, soundWin, soundLose, soundReveal, soundMatch, soundBet } from "@/lib/casinoSounds";
+import Confetti from "@/components/casino/Confetti";
 
 const TOTAL_NUMBERS = 20;
 const DRAW_COUNT = 5;
@@ -31,6 +32,7 @@ export default function Lotto() {
   const [bet, setBet] = useState(25);
   const [playing, setPlaying] = useState(false);
   const [message, setMessage] = useState<{ text: string; win: boolean } | null>(null);
+  const [confetti, setConfetti] = useState(false);
   const [revealing, setRevealing] = useState<number[]>([]);
 
   const toggle = (n: number) => {
@@ -69,7 +71,7 @@ export default function Lotto() {
           if (mult > 0) {
             const win = bet * mult;
             addCoins(win);
-            if (matches === 5) { soundJackpot(); } else { soundWin(); }
+            if (matches === 5) { soundJackpot(); setConfetti(true); setTimeout(() => setConfetti(false), 4000); } else { soundWin(); }
             setMessage({
               text: `🎉 ${matches} совпадений! +${win} монет (x${mult})`,
               win: true,
@@ -94,6 +96,7 @@ export default function Lotto() {
 
   return (
     <div className="flex flex-col items-center gap-6">
+      <Confetti active={confetti} />
       <div className="text-center">
         <h2 className="text-2xl font-bold text-yellow-400">🎱 Лото</h2>
         <p className="text-gray-400 text-sm mt-1">Выбери {PICK_COUNT} чисел из {TOTAL_NUMBERS} и угадай совпадения!</p>
