@@ -16,6 +16,11 @@ def hash_password(password):
 def generate_referral_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
+def esc(val):
+    if val is None:
+        return 'NULL'
+    return "'" + str(val).replace("'", "''") + "'"
+
 def handler(event: dict, context) -> dict:
     """Регистрация и вход пользователей"""
     if event.get('httpMethod') == 'OPTIONS':
@@ -35,41 +40,39 @@ def handler(event: dict, context) -> dict:
         ref_code = body.get('ref_code', '').strip()
 
         if not name or not password or not email:
+            cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Имя, email и пароль обязательны'})}
 
-        cur.execute(f"SELECT id FROM {S}.users WHERE email = %s", (email,))
+        cur.execute(f"SELECT id FROM {S}.users WHERE email = {esc(email)}")
         if cur.fetchone():
-            cur.close()
-            conn.close()
+            cur.close(); conn.close()
             return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Email уже зарегистрирован'})}
 
         referrer_id = None
         if ref_code:
-            cur.execute(f"SELECT id FROM {S}.users WHERE referral_code = %s", (ref_code,))
+            cur.execute(f"SELECT id FROM {S}.users WHERE referral_code = {esc(ref_code)}")
             row = cur.fetchone()
             if row:
                 referrer_id = row[0]
 
         my_code = generate_referral_code()
+        ref_id_sql = str(referrer_id) if referrer_id else 'NULL'
         cur.execute(
-            f"INSERT INTO {S}.users (name, password_hash, referral_code, referred_by, email) VALUES (%s, %s, %s, %s, %s) RETURNING id",
-            (name, hash_password(password), my_code, referrer_id, email)
+            f"INSERT INTO {S}.users (name, password_hash, referral_code, referred_by, email) VALUES ({esc(name)}, {esc(hash_password(password))}, {esc(my_code)}, {ref_id_sql}, {esc(email)}) RETURNING id"
         )
         user_id = cur.fetchone()[0]
 
         conn.commit()
-        cur.close()
-        conn.close()
+        cur.close(); conn.close()
         return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'user_id': user_id, 'referral_code': my_code, 'name': name, 'email': email})}
 
     elif action == 'login':
         name = body.get('name', '').strip()
         password = body.get('password', '').strip()
 
-        cur.execute(f"SELECT id, name, referral_code, balance, total_earned FROM {S}.users WHERE name = %s AND password_hash = %s", (name, hash_password(password)))
+        cur.execute(f"SELECT id, name, referral_code, balance, total_earned FROM {S}.users WHERE name = {esc(name)} AND password_hash = {esc(hash_password(password))}")
         row = cur.fetchone()
-        cur.close()
-        conn.close()
+        cur.close(); conn.close()
 
         if not row:
             return {'statusCode': 401, 'headers': headers, 'body': json.dumps({'error': 'Неверное имя или пароль'})}
@@ -81,10 +84,9 @@ def handler(event: dict, context) -> dict:
 
     elif action == 'get_user':
         user_id = body.get('user_id')
-        cur.execute(f"SELECT id, name, referral_code, balance, total_earned, created_at FROM {S}.users WHERE id = %s", (user_id,))
+        cur.execute(f"SELECT id, name, referral_code, balance, total_earned, created_at FROM {S}.users WHERE id = {int(user_id)}")
         row = cur.fetchone()
-        cur.close()
-        conn.close()
+        cur.close(); conn.close()
         if not row:
             return {'statusCode': 404, 'headers': headers, 'body': json.dumps({'error': 'Пользователь не найден'})}
         return {'statusCode': 200, 'headers': headers, 'body': json.dumps({
@@ -92,6 +94,5 @@ def handler(event: dict, context) -> dict:
             'balance': float(row[3] or 0), 'total_earned': float(row[4] or 0), 'created_at': str(row[5])
         })}
 
-    cur.close()
-    conn.close()
+    cur.close(); conn.close()
     return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'Неизвестное действие'})}
