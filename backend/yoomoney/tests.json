@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "name": "Create payment",
+      "method": "POST",
+      "path": "/",
+      "body": {"package_id": 1, "user_id": 1, "teaser_id": 0},
+      "expectedStatus": 200,
+      "expectedBody": {"payment_url": "string"},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

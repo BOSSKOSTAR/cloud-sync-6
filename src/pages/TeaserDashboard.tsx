@@ -16,9 +16,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import Icon from "@/components/ui/icon";
-import { PaymentButton } from "@/components/extensions/robokassa/PaymentButton";
 
-const ROBOKASSA_URL = "https://functions.poehali.dev/dd1f65e0-f97c-4deb-bc9b-09c4a1e02195";
+const YOOMONEY_API = "https://functions.poehali.dev/08fdd89a-d3bd-4126-a69a-3db806451fd8";
 const TEASERS_API = "https://functions.poehali.dev/8636b128-5f4c-4d28-9ecf-cf64e3cac45b";
 
 interface Package {
@@ -72,7 +71,7 @@ export default function TeaserDashboard() {
   const [packages, setPackages]     = useState<Package[]>([]);
   const [purchases, setPurchases]   = useState<Purchase[]>([]);
   const [buyDialog, setBuyDialog]   = useState<{ pkg: Package; teaserId: number | null } | null>(null);
-  const [buyPhone, setBuyPhone]     = useState("");
+  const [paying, setPaying]         = useState(false);
   const [selectedTeaser, setSelectedTeaser] = useState<number | "">("");
 
   useEffect(() => {
@@ -111,21 +110,26 @@ export default function TeaserDashboard() {
     if (data.purchases) setPurchases(data.purchases);
   };
 
-  const handlePaymentSuccess = async (orderNumber: string) => {
-    if (!buyDialog || !token) return;
-    await fetch(`${TEASERS_API}/purchase`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-User-Id": token },
-      body: JSON.stringify({
-        package_id: buyDialog.pkg.id,
-        teaser_id: selectedTeaser || null,
-        payment_id: orderNumber,
-      }),
-    });
-    setBuyDialog(null);
-    setSelectedTeaser("");
-    loadTeasers();
-    loadPurchases();
+  const handleYooMoneyPay = async () => {
+    if (!buyDialog || !user) return;
+    setPaying(true);
+    try {
+      const res = await fetch(YOOMONEY_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          package_id: buyDialog.pkg.id,
+          user_id: user.id,
+          teaser_id: selectedTeaser || 0,
+        }),
+      });
+      const data = await res.json();
+      if (data.payment_url) {
+        window.location.href = data.payment_url;
+      }
+    } finally {
+      setPaying(false);
+    }
   };
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -476,38 +480,24 @@ export default function TeaserDashboard() {
               </Select>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-slate-300 text-sm">Ваш телефон (для чека)</Label>
-              <Input
-                placeholder="+79991234567"
-                value={buyPhone}
-                onChange={(e) => setBuyPhone(e.target.value)}
-                className="bg-white/5 border-white/15 text-white placeholder:text-slate-600 focus-visible:ring-amber-500/50"
-              />
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3
+                            flex items-center gap-3 text-sm text-blue-300">
+              <Icon name="Info" size={15} className="shrink-0" />
+              После оплаты показы зачислятся автоматически в течение нескольких минут
             </div>
 
-            {user && buyDialog && (
-              <PaymentButton
-                apiUrl={ROBOKASSA_URL}
-                amount={buyDialog.pkg.price}
-                userName={user.name}
-                userEmail={user.email}
-                userPhone={buyPhone || "+70000000000"}
-                orderComment={`Тизерная реклама: пакет ${buyDialog.pkg.name}`}
-                cartItems={[{
-                  id: String(buyDialog.pkg.id),
-                  name: buyDialog.pkg.description,
-                  price: buyDialog.pkg.price,
-                  quantity: 1,
-                }]}
-                successUrl={`${window.location.origin}/teaser-dashboard`}
-                failUrl={`${window.location.origin}/teaser-dashboard`}
-                onSuccess={handlePaymentSuccess}
-                buttonText={`Оплатить ${buyDialog.pkg.price.toLocaleString("ru-RU")} ₽`}
-                className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black
-                           font-bold text-base transition-colors shadow-[0_0_20px_rgba(245,158,11,0.3)]"
-              />
-            )}
+            <Button
+              onClick={handleYooMoneyPay}
+              disabled={paying}
+              className="w-full py-6 rounded-xl bg-[#8B3FFD] hover:bg-[#7B2FED] text-white
+                         font-bold text-base transition-colors shadow-[0_0_20px_rgba(139,63,253,0.3)]"
+            >
+              {paying ? (
+                <><Icon name="Loader2" size={16} className="animate-spin mr-2" />Открываю ЮМани...</>
+              ) : (
+                <><Icon name="Wallet" size={16} className="mr-2" />Оплатить {buyDialog?.pkg.price.toLocaleString("ru-RU")} ₽ через ЮМани</>
+              )}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
