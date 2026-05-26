@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CoinsProvider } from "@/context/CoinsContext";
-import { TeaserAuthProvider } from "@/context/TeaserAuthContext";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -17,10 +16,6 @@ import Avito from "./pages/Avito";
 import ComingSoon from "./pages/ComingSoon";
 import NotFound from "./pages/NotFound";
 import Casino from "./pages/Casino";
-import TeaserNetwork from "./pages/TeaserNetwork";
-import TeaserLogin from "./pages/TeaserLogin";
-import TeaserDashboard from "./pages/TeaserDashboard";
-import TeaserWidget from "./pages/TeaserWidget";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +28,6 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
       <CoinsProvider>
-        <TeaserAuthProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
@@ -56,17 +50,12 @@ const App = () => (
                     <Route path="/vizitka" element={<Vizitka />} />
                     <Route path="/avito" element={<Avito />} />
                     <Route path="/casino" element={<Casino />} />
-                    <Route path="/teaser-network" element={<TeaserNetwork />} />
-                    <Route path="/teaser-login" element={<TeaserLogin />} />
-                    <Route path="/teaser-dashboard" element={<TeaserDashboard />} />
-                    <Route path="/teaser-widget" element={<TeaserWidget />} />
                     <Route path="*" element={<NotFound />} />
                   </>
                 )}
               </Routes>
             </BrowserRouter>
           </TooltipProvider>
-        </TeaserAuthProvider>
       </CoinsProvider>
     </ThemeProvider>
   </QueryClientProvider>

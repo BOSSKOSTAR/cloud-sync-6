@@ -1,1 +1,0 @@
-{"tests": [{"name": "Get teasers list", "method": "GET", "path": "/", "expectedStatus": 200, "expectedBody": {}, "bodyMatcher": "partial"}]}
