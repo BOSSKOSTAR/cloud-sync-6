@@ -7,6 +7,7 @@ POST /notify — webhook от ЮМани (зачислить показы пос
 import os
 import json
 import hashlib
+import hmac
 import urllib.parse
 import psycopg2
 
@@ -53,24 +54,25 @@ def handler(event: dict, context) -> dict:
         body_raw = event.get("body") or ""
         params = dict(urllib.parse.parse_qsl(body_raw))
 
-        notification_type = params.get("notification_type", "")
-        operation_id      = params.get("operation_id", "")
-        amount            = params.get("amount", "0")
-        currency          = params.get("currency", "643")
-        datetime_str      = params.get("datetime", "")
-        sender            = params.get("sender", "")
-        codepro           = params.get("codepro", "false")
-        label             = params.get("label", "")
-        sha1_hash         = params.get("sha1_hash", "")
+        received_sign = params.pop("sign", None)
+        label         = params.get("label", "")
+        codepro       = params.get("codepro", "false")
+        operation_id  = params.get("operation_id", "")
 
         secret = os.environ.get("YOOMONEY_SECRET", "")
-        check_str = "&".join([
-            notification_type, operation_id, amount, currency,
-            datetime_str, sender, codepro, secret, label,
-        ])
-        expected = hashlib.sha1(check_str.encode("utf-8")).hexdigest()
 
-        if expected != sha1_hash:
+        # Новая проверка: HMAC-SHA256 от строки параметров, отсортированных по алфавиту
+        sorted_str = "&".join(
+            f"{k}={urllib.parse.quote(v, safe='')}"
+            for k, v in sorted(params.items())
+        )
+        expected_sign = hmac.new(
+            secret.encode("utf-8"),
+            sorted_str.encode("utf-8"),
+            "sha256"
+        ).hexdigest()
+
+        if received_sign and received_sign != expected_sign:
             return {"statusCode": 400, "headers": {"Access-Control-Allow-Origin": "*"}, "body": "bad signature"}
 
         if codepro == "true":
