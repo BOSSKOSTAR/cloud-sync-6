@@ -66,6 +66,86 @@ def handler(event: dict, context) -> dict:
         conn = get_db()
         cur = conn.cursor()
 
+        # ── GET /packages — список тарифных пакетов ───────────────────────────
+        if method == 'GET' and len(parts) == 1 and parts[0] == 'packages':
+            cur.execute(
+                f"""SELECT id, name, views_count, price, description
+                    FROM {S}.teaser_packages
+                    WHERE is_active = TRUE
+                    ORDER BY price ASC"""
+            )
+            rows = cur.fetchall()
+            packages = [
+                {'id': r[0], 'name': r[1], 'views_count': r[2],
+                 'price': float(r[3]), 'description': r[4]}
+                for r in rows
+            ]
+            cur.close(); conn.close()
+            return json_response(200, {'packages': packages})
+
+        # ── POST /purchase — купить пакет показов ─────────────────────────────
+        if method == 'POST' and len(parts) == 1 and parts[0] == 'purchase':
+            user_id = get_user_id(event)
+            if not user_id:
+                cur.close(); conn.close()
+                return json_response(401, {'error': 'Требуется X-User-Id'})
+            body = json.loads(event.get('body') or '{}')
+            package_id = int(body.get('package_id', 0))
+            teaser_id = body.get('teaser_id')
+            payment_id = body.get('payment_id', '')
+
+            cur.execute(f"SELECT views_count, price FROM {S}.teaser_packages WHERE id = {package_id} AND is_active = TRUE")
+            pkg = cur.fetchone()
+            if not pkg:
+                cur.close(); conn.close()
+                return json_response(404, {'error': 'Пакет не найден'})
+            views_count, price = pkg[0], float(pkg[1])
+
+            cur.execute(
+                f"""INSERT INTO {S}.teaser_purchases
+                       (user_id, teaser_id, package_id, views_count, amount, payment_id, status)
+                    VALUES ({int(user_id)}, {'NULL' if not teaser_id else int(teaser_id)},
+                            {package_id}, {views_count}, {price},
+                            {escape(payment_id)}, 'completed')
+                    RETURNING id"""
+            )
+            purchase_id = cur.fetchone()[0]
+
+            if teaser_id:
+                cur.execute(
+                    f"""UPDATE {S}.teasers
+                        SET views_limit = views_limit + {views_count}
+                        WHERE id = {int(teaser_id)} AND user_id = {int(user_id)}"""
+                )
+            conn.commit()
+            cur.close(); conn.close()
+            return json_response(201, {'purchase_id': purchase_id, 'views_added': views_count})
+
+        # ── GET /purchases — история покупок пользователя ─────────────────────
+        if method == 'GET' and len(parts) == 1 and parts[0] == 'purchases':
+            user_id = get_user_id(event)
+            if not user_id:
+                cur.close(); conn.close()
+                return json_response(401, {'error': 'Требуется X-User-Id'})
+            cur.execute(
+                f"""SELECT p.id, p.teaser_id, t.title, pk.name, p.views_count,
+                           p.amount, p.status, p.created_at
+                    FROM {S}.teaser_purchases p
+                    LEFT JOIN {S}.teasers t ON t.id = p.teaser_id
+                    LEFT JOIN {S}.teaser_packages pk ON pk.id = p.package_id
+                    WHERE p.user_id = {int(user_id)}
+                    ORDER BY p.created_at DESC"""
+            )
+            rows = cur.fetchall()
+            purchases = [
+                {'id': r[0], 'teaser_id': r[1], 'teaser_title': r[2] or '—',
+                 'package_name': r[3], 'views_count': r[4],
+                 'amount': float(r[5]), 'status': r[6], 'created_at': str(r[7])}
+                for r in rows
+            ]
+            cur.close(); conn.close()
+            return json_response(200, {'purchases': purchases})
+
         # ── GET / — публичный список одобренных активных тизеров ──────────────
         if method == 'GET' and len(parts) == 0:
             params = event.get('queryStringParameters') or {}
@@ -109,7 +189,8 @@ def handler(event: dict, context) -> dict:
 
             cur.execute(
                 f"""SELECT id, title, description, image_url, target_url,
-                           category, is_approved, is_active, views, clicks, created_at
+                           category, is_approved, is_active, views, clicks,
+                           views_limit, views_used, created_at
                     FROM {S}.teasers
                     WHERE user_id = {int(user_id)}
                     ORDER BY created_at DESC"""
@@ -120,7 +201,9 @@ def handler(event: dict, context) -> dict:
                     'id': r[0], 'title': r[1], 'description': r[2], 'image_url': r[3],
                     'target_url': r[4], 'category': r[5],
                     'is_approved': r[6], 'is_active': r[7],
-                    'views': r[8] or 0, 'clicks': r[9] or 0, 'created_at': str(r[10]),
+                    'views': r[8] or 0, 'clicks': r[9] or 0,
+                    'views_limit': r[10] or 0, 'views_used': r[11] or 0,
+                    'created_at': str(r[12]),
                 }
                 for r in rows
             ]
@@ -258,12 +341,18 @@ def handler(event: dict, context) -> dict:
         if method == 'POST' and len(parts) == 2 and parts[0] == 'view':
             teaser_id = int(parts[1])
             cur.execute(
-                f"SELECT id FROM {S}.teasers WHERE id = {teaser_id} AND is_active = TRUE"
+                f"SELECT id, views_limit, views_used FROM {S}.teasers WHERE id = {teaser_id} AND is_active = TRUE AND is_approved = TRUE"
             )
             row = cur.fetchone()
             if not row:
                 cur.close(); conn.close()
                 return json_response(404, {'error': 'Тизер не найден'})
+
+            views_limit = row[1] or 0
+            views_used = row[2] or 0
+            if views_limit > 0 and views_used >= views_limit:
+                cur.close(); conn.close()
+                return json_response(402, {'error': 'Лимит показов исчерпан'})
 
             hdrs = event.get('headers') or {}
             ip = hdrs.get('X-Forwarded-For', hdrs.get('x-forwarded-for', ''))
@@ -272,7 +361,9 @@ def handler(event: dict, context) -> dict:
                 f"""INSERT INTO {S}.teaser_views (teaser_id, ip_address)
                     VALUES ({teaser_id}, {escape(ip[:45] if ip else '')})"""
             )
-            cur.execute(f"UPDATE {S}.teasers SET views = views + 1 WHERE id = {teaser_id}")
+            cur.execute(
+                f"UPDATE {S}.teasers SET views = views + 1, views_used = views_used + 1 WHERE id = {teaser_id}"
+            )
             conn.commit()
             cur.close(); conn.close()
             return json_response(200, {'success': True})

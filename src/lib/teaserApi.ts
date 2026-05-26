@@ -12,6 +12,8 @@ export interface Teaser {
   is_approved: boolean;
   views: number;
   clicks: number;
+  views_limit?: number;
+  views_used?: number;
   created_at: string;
   ctr?: number;
 }
