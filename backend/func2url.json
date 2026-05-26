@@ -1,4 +1,6 @@
 {
+  "teasers-api": "https://functions.poehali.dev/8636b128-5f4c-4d28-9ecf-cf64e3cac45b",
+  "teaser-auth": "https://functions.poehali.dev/ce0989e9-330b-40b6-8baa-af130aae6978",
   "casino-leaderboard": "https://functions.poehali.dev/34f643fb-7ec8-4f75-9c7a-1c1d2cdd702c",
   "admin": "https://functions.poehali.dev/fd69d698-1f88-4fda-b35b-73645337fa4d",
   "robokassa-robokassa": "https://functions.poehali.dev/dd1f65e0-f97c-4deb-bc9b-09c4a1e02195",
