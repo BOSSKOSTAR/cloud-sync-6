@@ -36,7 +36,7 @@ def escape(val):
 
 
 def handler(event: dict, context) -> dict:
-    """Аутентификация пользователей тизерной сети: регистрация, вход, профиль"""
+    """Аутентификация пользователей тизерной сети: регистрация, вход, профиль. v2"""
     if event.get('httpMethod') == 'OPTIONS':
         return {'statusCode': 200, 'headers': CORS_HEADERS, 'body': ''}
 
