@@ -34,6 +34,7 @@ export default function Admin() {
   const [users, setUsers] = useState<Record<string, unknown>[]>([]);
   const [matrices, setMatrices] = useState<Record<string, unknown>[]>([]);
   const [withdrawals, setWithdrawals] = useState<Record<string, unknown>[]>([]);
+  const [teasers, setTeasers] = useState<Record<string, unknown>[]>([]);
   const [prestart, setPrestart] = useState(() => localStorage.getItem("site_prestart") === "1");
 
   const [dialog, setDialog] = useState<{ type: string; item?: Record<string, unknown> } | null>(null);
@@ -52,6 +53,25 @@ export default function Admin() {
     }
   }
 
+  const TEASERS_URL = "https://functions.poehali.dev/8636b128-5f4c-4d28-9ecf-cf64e3cac45b";
+
+  async function loadTeasers() {
+    const res = await fetch(`${TEASERS_URL}/admin/all`, {
+      headers: { "X-Admin-Token": token },
+    }).then(r => r.json());
+    if (Array.isArray(res.teasers)) setTeasers(res.teasers);
+  }
+
+  async function approveTeaser(id: number, approve: boolean) {
+    await fetch(`${TEASERS_URL}/admin/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Admin-Token": token },
+      body: JSON.stringify({ is_approved: approve }),
+    });
+    toast.success(approve ? "Тизер одобрен" : "Тизер отклонён");
+    loadTeasers();
+  }
+
   async function loadAll(t?: string) {
     const tok = t ?? token;
     const [b, n, r, u, m, w] = await Promise.all([
@@ -68,6 +88,7 @@ export default function Admin() {
     if (Array.isArray(u)) setUsers(u);
     if (Array.isArray(m)) setMatrices(m);
     if (Array.isArray(w)) setWithdrawals(w);
+    loadTeasers();
   }
 
   async function markPaid(id: number) {
@@ -182,6 +203,13 @@ export default function Admin() {
             <TabsTrigger value="reviews">Отзывы ({reviews.length})</TabsTrigger>
             <TabsTrigger value="users">Пользователи ({users.length})</TabsTrigger>
             <TabsTrigger value="matrices">Матрицы ({matrices.length})</TabsTrigger>
+            <TabsTrigger value="teasers">
+              Тизеры {teasers.filter(t => !t.is_approved).length > 0 && (
+                <span className="ml-1.5 bg-amber-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {teasers.filter(t => !t.is_approved).length}
+                </span>
+              )}
+            </TabsTrigger>
           </TabsList>
 
           {/* WITHDRAWALS */}
@@ -321,6 +349,66 @@ export default function Admin() {
                 </Card>
               ))}
               {users.length === 0 && <p className="text-muted-foreground text-sm">Пользователей пока нет</p>}
+            </div>
+          </TabsContent>
+
+          {/* TEASERS */}
+          <TabsContent value="teasers">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Модерация тизеров</h2>
+              <Button size="sm" variant="outline" onClick={loadTeasers}><Icon name="RefreshCw" size={16} className="mr-2" />Обновить</Button>
+            </div>
+            <div className="flex gap-2 mb-4">
+              {["all", "pending", "approved"].map((f) => (
+                <Button
+                  key={f}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {}}
+                  className="text-xs"
+                >
+                  {{ all: `Все (${teasers.length})`, pending: `На модерации (${teasers.filter(t => !t.is_approved).length})`, approved: `Одобрены (${teasers.filter(t => t.is_approved).length})` }[f]}
+                </Button>
+              ))}
+            </div>
+            <div className="space-y-3">
+              {teasers.map((t) => (
+                <Card key={t.id} className={!t.is_approved ? "border-amber-400/50" : "border-green-500/30"}>
+                  <CardContent className="py-3 flex items-start gap-4">
+                    {t.image_url && (
+                      <img src={t.image_url as string} alt="" className="w-20 h-14 object-cover rounded flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{t.title as string}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-1">{t.description as string}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Категория: <span className="text-foreground">{t.category as string}</span>
+                        {" · "}Просмотры: {t.views as number} · Клики: {t.clicks as number}
+                        {" · "}{new Date(t.created_at as string).toLocaleDateString("ru-RU")}
+                      </p>
+                      <a href={t.target_url as string} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline truncate block mt-0.5">
+                        {t.target_url as string}
+                      </a>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <Badge variant={t.is_approved ? "default" : "secondary"} className={t.is_approved ? "bg-green-600" : "bg-amber-500/20 text-amber-400 border-amber-500/30"}>
+                        {t.is_approved ? "Одобрен" : "На модерации"}
+                      </Badge>
+                      {!t.is_approved && (
+                        <Button size="sm" onClick={() => approveTeaser(t.id as number, true)} className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs">
+                          <Icon name="Check" size={13} className="mr-1" />Одобрить
+                        </Button>
+                      )}
+                      {t.is_approved && (
+                        <Button size="sm" variant="outline" onClick={() => approveTeaser(t.id as number, false)} className="border-red-500/50 text-red-400 hover:bg-red-500/10 h-7 text-xs">
+                          <Icon name="X" size={13} className="mr-1" />Отклонить
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {teasers.length === 0 && <p className="text-muted-foreground text-sm">Тизеров пока нет</p>}
             </div>
           </TabsContent>
 

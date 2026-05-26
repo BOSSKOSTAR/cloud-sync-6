@@ -277,6 +277,51 @@ def handler(event: dict, context) -> dict:
             cur.close(); conn.close()
             return json_response(200, {'success': True})
 
+        # ── GET /admin/all — все тизеры для модерации (X-Admin-Token) ───────────
+        if method == 'GET' and len(parts) == 2 and parts[0] == 'admin' and parts[1] == 'all':
+            hdrs = event.get('headers') or {}
+            admin_token = hdrs.get('X-Admin-Token') or hdrs.get('x-admin-token')
+            if not admin_token:
+                cur.close(); conn.close()
+                return json_response(401, {'error': 'Требуется X-Admin-Token'})
+
+            cur.execute(
+                f"""SELECT id, user_id, title, description, image_url, target_url,
+                           category, is_active, is_approved, views, clicks, created_at
+                    FROM {S}.teasers
+                    ORDER BY is_approved ASC, created_at DESC"""
+            )
+            rows = cur.fetchall()
+            teasers = [
+                {
+                    'id': r[0], 'user_id': r[1], 'title': r[2], 'description': r[3],
+                    'image_url': r[4], 'target_url': r[5], 'category': r[6],
+                    'is_active': r[7], 'is_approved': r[8],
+                    'views': r[9] or 0, 'clicks': r[10] or 0, 'created_at': str(r[11]),
+                }
+                for r in rows
+            ]
+            cur.close(); conn.close()
+            return json_response(200, {'teasers': teasers})
+
+        # ── PUT /admin/{id} — одобрить/отклонить тизер ────────────────────────
+        if method == 'PUT' and len(parts) == 2 and parts[0] == 'admin':
+            hdrs = event.get('headers') or {}
+            admin_token = hdrs.get('X-Admin-Token') or hdrs.get('x-admin-token')
+            if not admin_token:
+                cur.close(); conn.close()
+                return json_response(401, {'error': 'Требуется X-Admin-Token'})
+
+            teaser_id = int(parts[1])
+            body = json.loads(event.get('body') or '{}')
+            is_approved = body.get('is_approved', False)
+            cur.execute(
+                f"UPDATE {S}.teasers SET is_approved = {'TRUE' if is_approved else 'FALSE'} WHERE id = {teaser_id}"
+            )
+            conn.commit()
+            cur.close(); conn.close()
+            return json_response(200, {'success': True, 'is_approved': is_approved})
+
         cur.close(); conn.close()
         return json_response(404, {'error': 'Маршрут не найден'})
 
