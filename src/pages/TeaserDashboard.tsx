@@ -73,6 +73,7 @@ export default function TeaserDashboard() {
   const [buyDialog, setBuyDialog]   = useState<{ pkg: Package; teaserId: number | null } | null>(null);
   const [paying, setPaying]         = useState(false);
   const [selectedTeaser, setSelectedTeaser] = useState<number | "">("");
+  const [paySuccess, setPaySuccess] = useState(false);
 
   useEffect(() => {
     if (!user || !token) {
@@ -82,6 +83,13 @@ export default function TeaserDashboard() {
     loadTeasers();
     loadPackages();
     loadPurchases();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
+      setPaySuccess(true);
+      window.history.replaceState({}, "", window.location.pathname);
+      setTimeout(() => setPaySuccess(false), 6000);
+    }
   }, [user, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadTeasers = async () => {
@@ -121,6 +129,7 @@ export default function TeaserDashboard() {
           package_id: buyDialog.pkg.id,
           user_id: user.id,
           teaser_id: selectedTeaser || 0,
+          origin: window.location.origin,
         }),
       });
       const data = await res.json();
@@ -199,6 +208,20 @@ export default function TeaserDashboard() {
       </header>
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+        {/* Уведомление об успешной оплате */}
+        {paySuccess && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-green-400">
+            <Icon name="CheckCircle" size={20} className="shrink-0 text-green-400" />
+            <div>
+              <p className="font-semibold text-sm">Оплата прошла успешно!</p>
+              <p className="text-xs text-green-400/70">Показы будут зачислены в течение нескольких минут.</p>
+            </div>
+            <button onClick={() => setPaySuccess(false)} className="ml-auto text-green-400/50 hover:text-green-400">
+              <Icon name="X" size={16} />
+            </button>
+          </div>
+        )}
+
         {/* Page title */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
           <div>

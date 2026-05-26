@@ -140,6 +140,11 @@ def handler(event: dict, context) -> dict:
         label   = f"pkg_{package_id}_user_{user_id}_teaser_{teaser_id}"
         comment = urllib.parse.quote(f"Тизерная реклама: {pkg_name}", safe="")
 
+        origin = body.get("origin", "")
+        return_path = f"{origin}/teaser-dashboard?payment=success&pkg={package_id}" if origin else ""
+        success_url = urllib.parse.quote(return_path, safe="") if return_path else ""
+
+        success_part = f"&successURL={success_url}" if success_url else ""
         payment_url = (
             f"https://yoomoney.ru/quickpay/confirm.xml?"
             f"receiver={RECEIVER}"
@@ -148,6 +153,7 @@ def handler(event: dict, context) -> dict:
             f"&paymentType=AC"
             f"&sum={price}"
             f"&label={label}"
+            f"{success_part}"
             f"&need-fio=false"
             f"&need-email=false"
             f"&need-phone=false"
