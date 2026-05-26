@@ -19,6 +19,18 @@ const TeaserAuthContext = createContext<TeaserAuthContextType | null>(null);
 
 const AUTH_URL = "https://functions.poehali.dev/ce0989e9-330b-40b6-8baa-af130aae6978";
 
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fetch(url, options);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+  throw new Error("Failed to fetch");
+}
+
 export function TeaserAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("teaser_token"));
@@ -36,7 +48,7 @@ export function TeaserAuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${AUTH_URL}/login`, {
+      const res = await fetchWithRetry(`${AUTH_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -54,7 +66,7 @@ export function TeaserAuthProvider({ children }: { children: ReactNode }) {
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${AUTH_URL}/register`, {
+      const res = await fetchWithRetry(`${AUTH_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
