@@ -97,6 +97,19 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
             </Button>
           </div>
 
+          {/* Видео */}
+          <div className={`mt-10 transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: '450ms' }}>
+            <div className="relative w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                src="https://vk.com/video_ext.php?oid=-134540866&id=456239020&hd=2&autoplay=0"
+                className="absolute inset-0 w-full h-full"
+                allowFullScreen
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+              />
+            </div>
+          </div>
+
           {/* Поделиться */}
           <div className={`flex flex-wrap items-center justify-center gap-2 mt-6 transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
             style={{ transitionDelay: '500ms' }}>
