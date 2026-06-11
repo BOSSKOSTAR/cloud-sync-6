@@ -1,18 +1,13 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import Icon from "@/components/ui/icon";
 import { toast } from "sonner";
+import AdminLogin from "@/components/admin/AdminLogin";
+import AdminHeader from "@/components/admin/AdminHeader";
+import AdminStats from "@/components/admin/AdminStats";
+import AdminTabs from "@/components/admin/AdminTabs";
 
 const ADMIN_URL = "https://functions.poehali.dev/fd69d698-1f88-4fda-b35b-73645337fa4d";
 const BALANCE_URL = "https://functions.poehali.dev/4466c646-9adb-42c9-adf7-314bc4a3165d";
+const TEASERS_URL = "https://functions.poehali.dev/8636b128-5f4c-4d28-9ecf-cf64e3cac45b";
 
 function api(path: string, method = "GET", token: string, body?: object) {
   const resource = path.replace(/^\//, "");
@@ -54,8 +49,6 @@ export default function Admin() {
       toast.error("Неверный пароль");
     }
   }
-
-  const TEASERS_URL = "https://functions.poehali.dev/8636b128-5f4c-4d28-9ecf-cf64e3cac45b";
 
   async function loadTeasers() {
     const res = await fetch(`${TEASERS_URL}/admin/all`, {
@@ -128,7 +121,7 @@ export default function Admin() {
     loadAll();
   }
 
-  async function remove(type: string, id: number) {
+  async function remove(type: string, id: unknown) {
     if (!confirm("Удалить?")) return;
     await api(`/${type}/${id}`, "DELETE", token);
     toast.success("Удалено");
@@ -140,407 +133,47 @@ export default function Admin() {
     loadAll();
   }
 
-  function openCreate(type: string) {
-    setForm({});
-    setDialog({ type });
-  }
-
-  function openEdit(type: string, item: Record<string, unknown>) {
-    setForm({ ...item });
-    setDialog({ type, item });
-  }
-
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle className="text-center">Вход в админ-панель</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Пароль"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && login()}
-            />
-            <Button className="w-full" onClick={login} disabled={loading}>
-              {loading ? "Проверка..." : "Войти"}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <AdminLogin
+        token={token}
+        loading={loading}
+        onTokenChange={setToken}
+        onLogin={login}
+      />
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b px-6 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">Админ-панель</h1>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
-            <Icon name="Clock" size={15} className={prestart ? "text-yellow-500" : "text-muted-foreground"} />
-            <Label htmlFor="prestart-toggle" className="text-sm cursor-pointer select-none">
-              Режим «Скоро открытие»
-            </Label>
-            <Switch
-              id="prestart-toggle"
-              checked={prestart}
-              onCheckedChange={(v) => {
-                setPrestart(v);
-                localStorage.setItem("site_prestart", v ? "1" : "0");
-                toast.success(v ? "Заглушка включена — сайт закрыт для посетителей" : "Заглушка отключена — сайт открыт");
-              }}
-            />
-          </div>
-          <Button variant="outline" size="sm" onClick={() => { localStorage.removeItem("admin_token"); setAuthed(false); }}>
-            <Icon name="LogOut" size={16} className="mr-2" /> Выйти
-          </Button>
-        </div>
-      </div>
-
+      <AdminHeader
+        prestart={prestart}
+        onPrestartChange={setPrestart}
+        onLogout={() => { localStorage.removeItem("admin_token"); setAuthed(false); }}
+      />
       <div className="p-6">
-        {/* Статистика */}
-        {stats && (
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <Card>
-              <CardContent className="pt-5 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <Icon name="Users" size={18} className="text-blue-500" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{stats.users_count.toLocaleString('ru')}</div>
-                    <div className="text-xs text-muted-foreground">Участников всего</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-5 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                    <Icon name="UserPlus" size={18} className="text-green-500" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">+{stats.new_today.toLocaleString('ru')}</div>
-                    <div className="text-xs text-muted-foreground">Новых сегодня</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-5 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-                    <Icon name="Banknote" size={18} className="text-yellow-500" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{stats.total_paid.toLocaleString('ru')} ₽</div>
-                    <div className="text-xs text-muted-foreground">Выплачено всего</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        <Tabs defaultValue="withdrawals">
-          <TabsList className="mb-6">
-            <TabsTrigger value="withdrawals">
-              Выводы {withdrawals.filter(w => w.status === "pending").length > 0 && (
-                <span className="ml-1.5 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-                  {withdrawals.filter(w => w.status === "pending").length}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="banners">Баннеры ({banners.length})</TabsTrigger>
-            <TabsTrigger value="news">Новости ({news.length})</TabsTrigger>
-            <TabsTrigger value="reviews">Отзывы ({reviews.length})</TabsTrigger>
-            <TabsTrigger value="users">Пользователи ({users.length})</TabsTrigger>
-            <TabsTrigger value="matrices">Матрицы ({matrices.length})</TabsTrigger>
-            <TabsTrigger value="teasers">
-              Тизеры {teasers.filter(t => !t.is_approved).length > 0 && (
-                <span className="ml-1.5 bg-amber-500 text-white text-xs rounded-full px-1.5 py-0.5">
-                  {teasers.filter(t => !t.is_approved).length}
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* WITHDRAWALS */}
-          <TabsContent value="withdrawals">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Заявки на вывод средств</h2>
-              <Button size="sm" variant="outline" onClick={loadAll}><Icon name="RefreshCw" size={16} className="mr-2" />Обновить</Button>
-            </div>
-            <div className="space-y-3">
-              {withdrawals.map((w) => (
-                <Card key={w.id} className={w.status === "pending" ? "border-orange-400/50" : ""}>
-                  <CardContent className="py-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{w.user_name} <span className="text-muted-foreground text-sm">#{w.user_id}</span></p>
-                      <p className="text-sm text-muted-foreground">{w.user_email}</p>
-                      <p className="text-sm mt-1">
-                        <span className="font-semibold text-green-600">{Number(w.amount).toFixed(2)} ₽</span>
-                        <span className="text-muted-foreground"> · СБП: {w.sbp_phone} ({w.sbp_bank})</span>
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{new Date(w.created_at).toLocaleString("ru-RU")}</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant={w.status === "pending" ? "destructive" : "secondary"}>
-                        {w.status === "pending" ? "Ожидает выплаты" : "Выплачено"}
-                      </Badge>
-                      {w.status === "pending" && (
-                        <Button size="sm" onClick={() => markPaid(w.id as number)} className="bg-green-600 hover:bg-green-700 text-white">
-                          <Icon name="Check" size={14} className="mr-1" />Выплачено
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {withdrawals.length === 0 && <p className="text-muted-foreground text-sm">Заявок пока нет</p>}
-            </div>
-          </TabsContent>
-
-          {/* BANNERS */}
-          <TabsContent value="banners">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Баннеры</h2>
-              <Button size="sm" onClick={() => openCreate("banners")}><Icon name="Plus" size={16} className="mr-2" />Добавить</Button>
-            </div>
-            <div className="space-y-3">
-              {banners.map((b) => (
-                <Card key={b.id}>
-                  <CardContent className="py-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{b.title}</p>
-                      <p className="text-sm text-muted-foreground">{b.subtitle}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={b.is_active ? "default" : "secondary"}>{b.is_active ? "Активен" : "Скрыт"}</Badge>
-                      <Button size="icon" variant="ghost" onClick={() => openEdit("banners", b)}><Icon name="Pencil" size={16} /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => remove("banners", b.id)}><Icon name="Trash2" size={16} /></Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {banners.length === 0 && <p className="text-muted-foreground text-sm">Баннеров пока нет</p>}
-            </div>
-          </TabsContent>
-
-          {/* NEWS */}
-          <TabsContent value="news">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Новости</h2>
-              <Button size="sm" onClick={() => openCreate("news")}><Icon name="Plus" size={16} className="mr-2" />Добавить</Button>
-            </div>
-            <div className="space-y-3">
-              {news.map((n) => (
-                <Card key={n.id}>
-                  <CardContent className="py-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{n.title}</p>
-                      <p className="text-sm text-muted-foreground">{new Date(n.created_at).toLocaleDateString("ru-RU")}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={n.is_published ? "default" : "secondary"}>{n.is_published ? "Опубликована" : "Черновик"}</Badge>
-                      <Button size="icon" variant="ghost" onClick={() => openEdit("news", n)}><Icon name="Pencil" size={16} /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => remove("news", n.id)}><Icon name="Trash2" size={16} /></Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {news.length === 0 && <p className="text-muted-foreground text-sm">Новостей пока нет</p>}
-            </div>
-          </TabsContent>
-
-          {/* REVIEWS */}
-          <TabsContent value="reviews">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Отзывы</h2>
-              <Button size="sm" onClick={() => openCreate("reviews")}><Icon name="Plus" size={16} className="mr-2" />Добавить</Button>
-            </div>
-            <div className="space-y-3">
-              {reviews.map((r) => (
-                <Card key={r.id}>
-                  <CardContent className="py-3 flex items-center justify-between">
-                    <div className="flex-1 mr-4">
-                      <p className="font-medium">{r.author_name} — {"⭐".repeat(r.rating)}</p>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{r.text}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Switch checked={r.is_approved} onCheckedChange={() => toggleReview(r)} />
-                      <span className="text-xs text-muted-foreground">{r.is_approved ? "Одобрен" : "На модерации"}</span>
-                      <Button size="icon" variant="ghost" onClick={() => openEdit("reviews", r)}><Icon name="Pencil" size={16} /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => remove("reviews", r.id)}><Icon name="Trash2" size={16} /></Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {reviews.length === 0 && <p className="text-muted-foreground text-sm">Отзывов пока нет</p>}
-            </div>
-          </TabsContent>
-
-          {/* USERS */}
-          <TabsContent value="users">
-            <h2 className="text-lg font-semibold mb-4">Пользователи</h2>
-            <div className="space-y-3">
-              {users.map((u) => (
-                <Card key={u.id}>
-                  <CardContent className="py-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{u.name}</p>
-                      <p className="text-sm text-muted-foreground">{u.email || "—"}</p>
-                    </div>
-                    <div className="text-right text-sm">
-                      <p>Баланс: <span className="font-medium">{Number(u.balance).toFixed(2)} ₽</span></p>
-                      <p className="text-muted-foreground">Операций: {u.tx_count}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {u.last_activity ? `Активен: ${new Date(u.last_activity).toLocaleDateString("ru-RU")}` : `Регистрация: ${new Date(u.created_at).toLocaleDateString("ru-RU")}`}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {users.length === 0 && <p className="text-muted-foreground text-sm">Пользователей пока нет</p>}
-            </div>
-          </TabsContent>
-
-          {/* TEASERS */}
-          <TabsContent value="teasers">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Модерация тизеров</h2>
-              <Button size="sm" variant="outline" onClick={loadTeasers}><Icon name="RefreshCw" size={16} className="mr-2" />Обновить</Button>
-            </div>
-            <div className="flex gap-2 mb-4">
-              {["all", "pending", "approved"].map((f) => (
-                <Button
-                  key={f}
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {}}
-                  className="text-xs"
-                >
-                  {{ all: `Все (${teasers.length})`, pending: `На модерации (${teasers.filter(t => !t.is_approved).length})`, approved: `Одобрены (${teasers.filter(t => t.is_approved).length})` }[f]}
-                </Button>
-              ))}
-            </div>
-            <div className="space-y-3">
-              {teasers.map((t) => (
-                <Card key={t.id} className={!t.is_approved ? "border-amber-400/50" : "border-green-500/30"}>
-                  <CardContent className="py-3 flex items-start gap-4">
-                    {t.image_url && (
-                      <img src={t.image_url as string} alt="" className="w-20 h-14 object-cover rounded flex-shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{t.title as string}</p>
-                      <p className="text-sm text-muted-foreground line-clamp-1">{t.description as string}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Категория: <span className="text-foreground">{t.category as string}</span>
-                        {" · "}Просмотры: {t.views as number} · Клики: {t.clicks as number}
-                        {" · "}{new Date(t.created_at as string).toLocaleDateString("ru-RU")}
-                      </p>
-                      <a href={t.target_url as string} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline truncate block mt-0.5">
-                        {t.target_url as string}
-                      </a>
-                    </div>
-                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                      <Badge variant={t.is_approved ? "default" : "secondary"} className={t.is_approved ? "bg-green-600" : "bg-amber-500/20 text-amber-400 border-amber-500/30"}>
-                        {t.is_approved ? "Одобрен" : "На модерации"}
-                      </Badge>
-                      {!t.is_approved && (
-                        <Button size="sm" onClick={() => approveTeaser(t.id as number, true)} className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs">
-                          <Icon name="Check" size={13} className="mr-1" />Одобрить
-                        </Button>
-                      )}
-                      {t.is_approved && (
-                        <Button size="sm" variant="outline" onClick={() => approveTeaser(t.id as number, false)} className="border-red-500/50 text-red-400 hover:bg-red-500/10 h-7 text-xs">
-                          <Icon name="X" size={13} className="mr-1" />Отклонить
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {teasers.length === 0 && <p className="text-muted-foreground text-sm">Тизеров пока нет</p>}
-            </div>
-          </TabsContent>
-
-          {/* MATRICES */}
-          <TabsContent value="matrices">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Матрицы пользователей</h2>
-              <Button size="sm" variant="outline" onClick={loadAll}><Icon name="RefreshCw" size={16} className="mr-2" />Обновить</Button>
-            </div>
-            <div className="space-y-3">
-              {matrices.map((m) => (
-                <Card key={m.id}>
-                  <CardContent className="py-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{m.user_name || "—"} <span className="text-muted-foreground text-sm">#{m.user_id}</span></p>
-                      <p className="text-sm text-muted-foreground">{m.user_email || "—"}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Тариф: {m.tariff_name} · Уровень {m.level_number} · Создана {new Date(m.created_at).toLocaleDateString("ru-RU")}</p>
-                    </div>
-                    <div className="text-right text-sm flex flex-col items-end gap-1">
-                      <Badge variant={m.status === "active" ? "default" : "secondary"}>{m.status === "active" ? "Активна" : m.status === "completed" ? "Завершена" : String(m.status)}</Badge>
-                      <p className="text-muted-foreground">Слотов: {m.slots_filled} / {m.total_slots}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {matrices.length === 0 && <p className="text-muted-foreground text-sm">Матриц пока нет</p>}
-            </div>
-          </TabsContent>
-        </Tabs>
+        <AdminStats stats={stats} />
+        <AdminTabs
+          banners={banners}
+          news={news}
+          reviews={reviews}
+          users={users}
+          matrices={matrices}
+          withdrawals={withdrawals}
+          teasers={teasers}
+          dialog={dialog}
+          form={form}
+          onSetDialog={setDialog}
+          onSetForm={setForm}
+          onMarkPaid={markPaid}
+          onApproveTeaser={approveTeaser}
+          onSave={save}
+          onRemove={remove}
+          onToggleReview={toggleReview}
+          onLoadAll={loadAll}
+          onLoadTeasers={loadTeasers}
+        />
       </div>
-
-      {/* DIALOG */}
-      <Dialog open={!!dialog} onOpenChange={(o) => !o && setDialog(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {dialog?.item ? "Редактировать" : "Создать"}{" "}
-              {{ banners: "баннер", news: "новость", reviews: "отзыв" }[dialog?.type || ""] || ""}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            {dialog?.type === "banners" && (
-              <>
-                <div><Label>Заголовок</Label><Input value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-                <div><Label>Подзаголовок</Label><Input value={form.subtitle || ""} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} /></div>
-                <div><Label>Ссылка на изображение</Label><Input value={form.image_url || ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} /></div>
-                <div><Label>Текст кнопки</Label><Input value={form.button_text || ""} onChange={(e) => setForm({ ...form, button_text: e.target.value })} /></div>
-                <div><Label>Ссылка кнопки</Label><Input value={form.button_link || ""} onChange={(e) => setForm({ ...form, button_link: e.target.value })} /></div>
-                <div className="flex items-center gap-2"><Switch checked={!!form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} /><Label>Активен</Label></div>
-              </>
-            )}
-            {dialog?.type === "news" && (
-              <>
-                <div><Label>Заголовок</Label><Input value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-                <div><Label>Текст</Label><Textarea rows={5} value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} /></div>
-                <div><Label>Ссылка на изображение</Label><Input value={form.image_url || ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} /></div>
-                <div className="flex items-center gap-2"><Switch checked={!!form.is_published} onCheckedChange={(v) => setForm({ ...form, is_published: v })} /><Label>Опубликована</Label></div>
-              </>
-            )}
-            {dialog?.type === "reviews" && (
-              <>
-                <div><Label>Имя автора</Label><Input value={form.author_name || ""} onChange={(e) => setForm({ ...form, author_name: e.target.value })} /></div>
-                <div><Label>Email (необязательно)</Label><Input value={form.author_email || ""} onChange={(e) => setForm({ ...form, author_email: e.target.value })} /></div>
-                <div><Label>Текст отзыва</Label><Textarea rows={4} value={form.text || ""} onChange={(e) => setForm({ ...form, text: e.target.value })} /></div>
-                <div><Label>Оценка (1-5)</Label><Input type="number" min={1} max={5} value={form.rating || 5} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} /></div>
-                <div className="flex items-center gap-2"><Switch checked={!!form.is_approved} onCheckedChange={(v) => setForm({ ...form, is_approved: v })} /><Label>Одобрен</Label></div>
-              </>
-            )}
-            <div className="flex gap-2 pt-2">
-              <Button className="flex-1" onClick={save}>Сохранить</Button>
-              <Button variant="outline" className="flex-1" onClick={() => setDialog(null)}>Отмена</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
