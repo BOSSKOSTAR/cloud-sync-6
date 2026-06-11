@@ -1,22 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 
-function useCountUp(target: number, duration = 2000, start = false) {
-  const [value, setValue] = useState(0)
-  useEffect(() => {
-    if (!start) return
-    let startTime: number | null = null
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp
-      const progress = Math.min((timestamp - startTime) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setValue(Math.floor(eased * target))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [start, target, duration])
-  return value
-}
-
 function useInView(threshold = 0.3) {
   const ref = useRef<HTMLDivElement>(null)
   const [inView, setInView] = useState(false)
@@ -28,8 +11,45 @@ function useInView(threshold = 0.3) {
   return { ref, inView }
 }
 
-export default function AnimatedNumber({ value, suffix = '', duration = 2000 }: { value: number; suffix?: string; duration?: number }) {
+function useSlotCount(target: number, duration = 2200, start = false) {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    if (!start || target === 0) return
+    let frame: number
+    const startTime = performance.now()
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+
+      if (progress < 0.7) {
+        // фаза "рулетки" — быстро мелькают случайные числа вблизи target
+        const randomOffset = Math.random() * target * 0.4
+        setValue(Math.floor(target * 0.6 + randomOffset))
+      } else {
+        // фаза "торможения" — плавно приближаемся к target
+        const slowProgress = (progress - 0.7) / 0.3
+        const eased = 1 - Math.pow(1 - slowProgress, 4)
+        setValue(Math.floor(target * (0.6 + eased * 0.4)))
+      }
+
+      if (progress < 1) {
+        frame = requestAnimationFrame(tick)
+      } else {
+        setValue(target)
+      }
+    }
+
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [start, target, duration])
+
+  return value
+}
+
+export default function AnimatedNumber({ value, suffix = '', duration = 2200 }: { value: number; suffix?: string; duration?: number }) {
   const { ref, inView } = useInView()
-  const count = useCountUp(value, duration, inView)
+  const count = useSlotCount(value, duration, inView)
   return <span ref={ref}>{count.toLocaleString('ru')}{suffix}</span>
 }
