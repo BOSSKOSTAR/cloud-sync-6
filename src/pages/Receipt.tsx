@@ -13,6 +13,7 @@ export default function Receipt() {
   const amount = params.get('amount') || '0'
   const date = params.get('date') || new Date().toISOString()
   const tariff = params.get('tariff') || 'Мини'
+  const bank = params.get('bank') || ''
   const ref = params.get('ref') || Math.random().toString(36).slice(2, 10).toUpperCase()
 
   const formattedAmount = Number(amount).toLocaleString('ru')
@@ -58,6 +59,12 @@ export default function Receipt() {
               <span className="text-white/40 text-sm">Тариф</span>
               <span className="text-yellow-400 font-medium text-sm">{tariff}</span>
             </div>
+            {bank && (
+              <div className="flex justify-between items-center">
+                <span className="text-white/40 text-sm">Банк</span>
+                <span className="text-white font-medium text-sm">{bank}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center">
               <span className="text-white/40 text-sm">Дата и время</span>
               <span className="text-white/70 text-sm">{formatDate(date)}</span>

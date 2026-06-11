@@ -57,6 +57,7 @@ export default function DashboardWallet({
       date: tx.created_at,
       tariff: tariffMap[tx.type] || 'Плям про100',
       ref: String(tx.id).padStart(8, '0'),
+      ...(withdrawBank ? { bank: withdrawBank } : {}),
     })
     window.open(`/receipt?${params.toString()}`, '_blank')
   }
