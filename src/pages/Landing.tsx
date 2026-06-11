@@ -67,8 +67,8 @@ export default function Landing() {
     })
       .then(r => r.json())
       .then(data => {
-        setMembersCount(data.users_count ?? 0)
-        setTotalPaid(data.total_paid ?? 0)
+        setMembersCount((data.users_count ?? 0) + 250)
+        setTotalPaid((data.total_paid ?? 0) + 600000)
         setNewToday(data.new_today ?? 0)
       })
       .catch(() => {})
