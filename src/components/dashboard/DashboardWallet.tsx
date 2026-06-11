@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import Icon from '@/components/ui/icon'
+import { useNavigate } from 'react-router-dom'
 
 interface Transaction {
   id: number
@@ -19,6 +20,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 interface Props {
   userId: number
+  userName: string
   balance: number
   transactions: Transaction[]
   withdrawAmount: string
@@ -33,6 +35,7 @@ interface Props {
 
 export default function DashboardWallet({
   userId,
+  userName,
   balance,
   transactions,
   withdrawAmount,
@@ -44,6 +47,20 @@ export default function DashboardWallet({
   onWithdraw,
   inputCls,
 }: Props) {
+  const navigate = useNavigate()
+
+  function openReceipt(tx: Transaction) {
+    const tariffMap: Record<string, string> = { matrix_payout: 'Матрица', topup: 'Пополнение' }
+    const params = new URLSearchParams({
+      name: userName,
+      amount: String(Math.abs(tx.amount)),
+      date: tx.created_at,
+      tariff: tariffMap[tx.type] || 'Плям про100',
+      ref: String(tx.id).padStart(8, '0'),
+    })
+    window.open(`/receipt?${params.toString()}`, '_blank')
+  }
+
   return (
     <div className="space-y-4">
       <div className="grid md:grid-cols-2 gap-4">
@@ -93,8 +110,19 @@ export default function DashboardWallet({
                     <div className="font-medium text-sm text-white">{TYPE_LABELS[tx.type] || tx.type}</div>
                     <div className="text-white/40 text-xs">{new Date(tx.created_at).toLocaleString('ru')}</div>
                   </div>
-                  <div className={`font-bold ${isIncome ? 'text-green-400' : 'text-red-400'}`}>
-                    {isIncome ? '+' : '-'}{Math.abs(tx.amount).toLocaleString('ru')} ₽
+                  <div className="flex items-center gap-2">
+                    <div className={`font-bold ${isIncome ? 'text-green-400' : 'text-red-400'}`}>
+                      {isIncome ? '+' : '-'}{Math.abs(tx.amount).toLocaleString('ru')} ₽
+                    </div>
+                    {isIncome && (
+                      <button
+                        onClick={() => openReceipt(tx)}
+                        className="text-white/30 hover:text-yellow-400 transition-colors"
+                        title="Получить чек"
+                      >
+                        <Icon name="Receipt" size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
               )

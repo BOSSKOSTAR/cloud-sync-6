@@ -247,6 +247,7 @@ export default function Dashboard() {
         {tab === 'wallet' && (
           <DashboardWallet
             userId={user.user_id}
+            userName={user.name}
             balance={balance}
             transactions={transactions}
             withdrawAmount={withdrawAmount}

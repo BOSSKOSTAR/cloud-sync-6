@@ -16,6 +16,7 @@ import Avito from "./pages/Avito";
 import ComingSoon from "./pages/ComingSoon";
 import NotFound from "./pages/NotFound";
 import Casino from "./pages/Casino";
+import Receipt from "./pages/Receipt";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                     <Route path="/vizitka" element={<Vizitka />} />
                     <Route path="/avito" element={<Avito />} />
                     <Route path="/casino" element={<Casino />} />
+                    <Route path="/receipt" element={<Receipt />} />
                     <Route path="*" element={<NotFound />} />
                   </>
                 )}
