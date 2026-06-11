@@ -56,6 +56,7 @@ export default function Landing() {
   const [heroVisible, setHeroVisible] = useState(false)
   const [membersCount, setMembersCount] = useState(0)
   const [totalPaid, setTotalPaid] = useState(0)
+  const [newToday, setNewToday] = useState(0)
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 100)
@@ -68,6 +69,7 @@ export default function Landing() {
       .then(data => {
         setMembersCount(data.users_count ?? 0)
         setTotalPaid(data.total_paid ?? 0)
+        setNewToday(data.new_today ?? 0)
       })
       .catch(() => {})
   }, [])
@@ -119,7 +121,7 @@ export default function Landing() {
         }
       `}</style>
 
-      <LandingHero heroVisible={heroVisible} membersCount={membersCount} totalPaid={totalPaid} />
+      <LandingHero heroVisible={heroVisible} membersCount={membersCount} totalPaid={totalPaid} newToday={newToday} />
 
       {/* Рекламный баннер */}
       <section className="max-w-6xl mx-auto px-4 py-10">

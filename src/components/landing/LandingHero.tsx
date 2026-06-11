@@ -9,9 +9,10 @@ interface LandingHeroProps {
   heroVisible: boolean
   membersCount: number
   totalPaid: number
+  newToday: number
 }
 
-export default function LandingHero({ heroVisible, membersCount, totalPaid }: LandingHeroProps) {
+export default function LandingHero({ heroVisible, membersCount, totalPaid, newToday }: LandingHeroProps) {
   const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
 
@@ -144,19 +145,35 @@ export default function LandingHero({ heroVisible, membersCount, totalPaid }: La
         </div>
       </section>
 
-      {/* Live counter */}
-      {membersCount >= 10 && (
+      {/* Статистика */}
+      {membersCount >= 0 && (
         <section className="py-8 px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/20 rounded-2xl p-6 text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/20 rounded-2xl p-6">
+              <div className="flex items-center justify-center gap-2 mb-5">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
-                <span className="text-green-400 text-sm font-medium">Онлайн сейчас</span>
+                <span className="text-green-400 text-sm font-medium">Статистика в реальном времени</span>
               </div>
-              <div className="text-4xl font-bold mb-1">
-                <AnimatedNumber value={membersCount} /> <span className="text-blue-400">участников</span>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                    <AnimatedNumber value={membersCount} />
+                  </div>
+                  <p className="text-white/40 text-xs md:text-sm">Участников</p>
+                </div>
+                <div className="border-x border-white/10">
+                  <div className="text-3xl md:text-4xl font-bold text-green-400 mb-1">
+                    +<AnimatedNumber value={newToday} />
+                  </div>
+                  <p className="text-white/40 text-xs md:text-sm">Новых сегодня</p>
+                </div>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-1">
+                    <AnimatedNumber value={totalPaid} suffix=" ₽" />
+                  </div>
+                  <p className="text-white/40 text-xs md:text-sm">Выплачено</p>
+                </div>
               </div>
-              <p className="text-white/40 text-sm">уже зарабатывают в системе Плям про100</p>
             </div>
           </div>
         </section>

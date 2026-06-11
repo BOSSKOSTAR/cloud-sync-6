@@ -143,8 +143,10 @@ def handler(event: dict, context) -> dict:
         users_count = cur.fetchone()[0]
         cur.execute(f"SELECT COALESCE(SUM(amount), 0) FROM {S}.transactions WHERE type = 'withdrawal' AND status = 'completed'")
         total_paid = float(cur.fetchone()[0])
+        cur.execute(f"SELECT COUNT(*) FROM {S}.users WHERE created_at::date = CURRENT_DATE")
+        new_today = cur.fetchone()[0]
         cur.close(); conn.close()
-        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'users_count': users_count, 'total_paid': total_paid})}
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'users_count': users_count, 'total_paid': total_paid, 'new_today': new_today})}
 
     elif action == 'get_referrals':
         user_id = int(body.get('user_id'))

@@ -12,6 +12,7 @@ import Icon from "@/components/ui/icon";
 import { toast } from "sonner";
 
 const ADMIN_URL = "https://functions.poehali.dev/fd69d698-1f88-4fda-b35b-73645337fa4d";
+const BALANCE_URL = "https://functions.poehali.dev/4466c646-9adb-42c9-adf7-314bc4a3165d";
 
 function api(path: string, method = "GET", token: string, body?: object) {
   const resource = path.replace(/^\//, "");
@@ -35,6 +36,7 @@ export default function Admin() {
   const [matrices, setMatrices] = useState<Record<string, unknown>[]>([]);
   const [withdrawals, setWithdrawals] = useState<Record<string, unknown>[]>([]);
   const [teasers, setTeasers] = useState<Record<string, unknown>[]>([]);
+  const [stats, setStats] = useState<{ users_count: number; total_paid: number; new_today: number } | null>(null);
   const [prestart, setPrestart] = useState(() => localStorage.getItem("site_prestart") === "1");
 
   const [dialog, setDialog] = useState<{ type: string; item?: Record<string, unknown> } | null>(null);
@@ -72,6 +74,15 @@ export default function Admin() {
     loadTeasers();
   }
 
+  async function loadStats() {
+    const res = await fetch(BALANCE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "get_stats" }),
+    }).then(r => r.json());
+    setStats({ users_count: res.users_count ?? 0, total_paid: res.total_paid ?? 0, new_today: res.new_today ?? 0 });
+  }
+
   async function loadAll(t?: string) {
     const tok = t ?? token;
     const [b, n, r, u, m, w] = await Promise.all([
@@ -89,6 +100,7 @@ export default function Admin() {
     if (Array.isArray(m)) setMatrices(m);
     if (Array.isArray(w)) setWithdrawals(w);
     loadTeasers();
+    loadStats();
   }
 
   async function markPaid(id: number) {
@@ -189,6 +201,51 @@ export default function Admin() {
       </div>
 
       <div className="p-6">
+        {/* Статистика */}
+        {stats && (
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <Card>
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <Icon name="Users" size={18} className="text-blue-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{stats.users_count.toLocaleString('ru')}</div>
+                    <div className="text-xs text-muted-foreground">Участников всего</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                    <Icon name="UserPlus" size={18} className="text-green-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">+{stats.new_today.toLocaleString('ru')}</div>
+                    <div className="text-xs text-muted-foreground">Новых сегодня</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                    <Icon name="Banknote" size={18} className="text-yellow-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{stats.total_paid.toLocaleString('ru')} ₽</div>
+                    <div className="text-xs text-muted-foreground">Выплачено всего</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <Tabs defaultValue="withdrawals">
           <TabsList className="mb-6">
             <TabsTrigger value="withdrawals">
