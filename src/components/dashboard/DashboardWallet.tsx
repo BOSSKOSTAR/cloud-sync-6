@@ -49,13 +49,19 @@ export default function DashboardWallet({
 }: Props) {
   const navigate = useNavigate()
 
+  function getTariffByAmount(amount: number): string {
+    if (amount >= 120000) return 'Мажор'
+    if (amount >= 6000) return 'Минор'
+    return 'Мини'
+  }
+
   function openReceipt(tx: Transaction) {
-    const tariffMap: Record<string, string> = { matrix_payout: 'Матрица', topup: 'Пополнение' }
+    const amt = Math.abs(tx.amount)
     const params = new URLSearchParams({
       name: userName,
-      amount: String(Math.abs(tx.amount)),
+      amount: String(amt),
       date: tx.created_at,
-      tariff: tariffMap[tx.type] || 'Плям про100',
+      tariff: getTariffByAmount(amt),
       ref: String(tx.id).padStart(8, '0'),
       ...(withdrawBank ? { bank: withdrawBank } : {}),
     })
